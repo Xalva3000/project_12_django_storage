@@ -9,15 +9,15 @@ menu = [{'title': "Продукты", 'url_name': 'products:products'},
 ]
 
 tools = {
-	"products": [{'title': "Список", 'path': 'products/'},
-	             {'title': "Добавить", 'path': 'products/add_product/'}, ],
-	"contractors": [{'title': "Список", 'path': 'contractors/'},
-	                {'title': "Добавить", 'path': 'contractors/add_contractor/'},],
-	"contracts": [{'title': 'Список', 'path': 'contracts'},
-	              {'title': "Список+", 'path': 'contracts/plus/'},
-	              {'title': "Добавить", 'path': 'contracts/add_contract/'},
-	              {'title': "Удаленные", 'path': 'contracts/deleted/'},],
-	"storage_items": [{'title': 'Список', 'path': 'storage_items/storage_items/'},],
+	"products": [{'title': "Список", 'path': 'products:products'},
+	             {'title': "Добавить", 'path': 'products:add_product'}, ],
+	"contractors": [{'title': "Список", 'path': 'contractors:contractors'},
+	                {'title': "Добавить", 'path': 'contractors:add_contractor'},],
+	"contracts": [{'title': 'Список', 'path': 'contracts:contracts'},
+	              {'title': "Список+", 'path': 'contracts:contracts_plus'},
+	              {'title': "Добавить", 'path': 'contracts:add_contract'},
+	              {'title': "Удаленные", 'path': 'contracts:contracts_deleted'},],
+	"storage_items": [{'title': 'Список', 'path': 'storage_items:storage_items'},],
 }
 
 
