@@ -1,0 +1,128 @@
+html, body {
+	font-family: 'Arial';
+	margin: 0;
+	padding: 0;
+	height: 15%;
+	width: 100%;
+	color: #444;
+}
+.table-page {
+	width: 100%;
+	height: 100%;
+	vertical-align: top;
+}
+.tools-menu {
+    height: 100%;
+    width: 15%;
+}
+.table-page tr {height: 100%;}
+.clear {clear: both;}
+
+h1.title {
+    text-align: center;
+    font-size: 40;
+    color: black;
+    padding: 10px;
+}
+
+.header {
+	background: #3F4137;
+	height: 60px;
+}
+
+tr {height: 100%;}
+
+ul.mainmenu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	height: 60px;
+	color: #fdc073;
+	font-size: 20px;
+	overflow: hidden;
+}
+ul.mainmenu li {
+	float: left;
+	margin: 18px 40px 0 30px;
+}
+
+ul.mainmenu li.last {float: right;}
+
+ul.mainmenu li a {
+	color: #eec899;
+	text-decoration: none;
+}
+ul.mainmenu li a:hover {
+	color: #FDA83D;
+	
+}
+
+.table-content {
+	width: 100%;
+	min-height: 100%;
+	height: 100%;
+}
+
+ul.content-table {
+	margin: 0;
+	padding: 60px 0 0 30px;
+	list-style: none;
+	font-family: Sans-serif, Arial, Tahoma;
+	font-size: 28px;
+}
+ul.content-table li {
+	margin: 0 0 40px 0;
+}
+ul.content-table li a {
+	color: #BB5715;
+	text-decoration: none;
+}
+ul.content-table li a:hover {color: #F0711C;}
+
+.content-text {
+	margin: 60px 0 0 30px;
+	color: #000;
+	font-size: 20px;
+	font-family: Yandex Sans Display Light;
+}
+.content-text h1 {font-size: 32px;}
+
+.form-input {
+    width: 300px;
+    font-size: 16px;
+}
+
+.form-label {
+    display: inline-block;
+    min-width: 150px;
+    vertical-align: top;
+}
+
+.form-error ul {
+    list-style: none;
+    padding: 0;
+    color: #CC0000;
+}
+
+.form-button {
+    min-width: 200px;
+    font-size: 16px;
+}
+
+.contract-execution {
+    list-style: none;
+}
+ul.contract-execution li {
+    float: left;
+}
+
+
+.pages-list {
+    display: inline;
+    list-style: none;
+}
+
+.page-num {
+    display: inline;
+    float: center;
+}

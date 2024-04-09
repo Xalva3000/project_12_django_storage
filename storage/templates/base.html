@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link type="text/css" href="{% static 'products/css/base.css' %}" rel="stylesheet" />
+	<link type="text/css" href="{% static 'products/css/header.css' %}" rel="stylesheet" />
+    <link type="text/css" href="{% static 'products/css/bootstrap.min.css' %}" rel="stylesheet" />
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+     <title>{{ title }}</title>
+</head>
+
+<body>
+<!--  -->
+<!-- <div class="navbar">
+    <div class="drop">
+        <button class="nav-button">&#9776;</button>
+        <div class="mainmenu">
+            {% for i in menu %}
+            <a href="{% url i.url_name %}">{{i.title}}</a>
+            {% endfor %}
+        </div>
+    </div> -->
+
+
+    
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Посейдон</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                
+            {% for i in menu %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url i.url_name %}">{{i.title}}</a>
+              </li>
+            {% endfor %}
+            </ul>
+            <!-- aria-current="page" -->
+            
+          </div>
+          <div style="display: flex; justify-content: flex-end;">
+            {% if user.is_authenticated %}
+            <nav class="navbar bg-body-tertiary">
+                <form class="container-fluid justify-content-start" id="logout-form" method="post" action="{% url 'users:logout' %}">
+                    {% csrf_token %}
+                    <a href="{% url 'users:profile' %}" class="btn btn-outline-success me-2" type="button">{{ user.username }}</a>
+                    <a href="{% url 'users:logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-sm btn-outline-secondary" type="button">Выйти</a>
+                </form>
+            </nav>
+            {% else %}
+            <nav class="navbar bg-body-tertiary">
+                <form class="container-fluid justify-content-start" id="logout-form" method="post" action="{% url 'users:logout' %}">
+                    {% csrf_token %}
+                  <a href="{% url 'users:login' %}" class="btn btn-outline-success me-2" type="button">Войти</a>
+                  <a href="{% url 'users:register' %}" class="btn btn-sm btn-outline-secondary" type="button">Регистрация</a>
+                </form>
+            </nav>
+            {% endif %}
+            </div>
+        </div>
+        
+      </nav>
+    
+      
+
+      
+    <div class="clear"></div>
+</div>
+<!--  -->
+<div class="main-container">
+
+    <div class="left-bar">
+        <ul class="list-group">
+        {% for i in tools %}
+        <li class="list-group-item"><a href="http://127.0.0.1:8000/{{ i.path }}">{{i.title}}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+
+
+    <div class="container">
+       <h1 class="title">{{ title }}</h1>
+        {% block content %}
+
+        {% endblock content %}
+    </div>
+
+    <div class="right-bar">
+        <ul class="list-group">
+            {% for i in tools %}
+            <li class="list-group-item"><a href="http://127.0.0.1:8000/{{ i.path }}">{{i.title}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+<!--  -->
+<script src="{% static 'products/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

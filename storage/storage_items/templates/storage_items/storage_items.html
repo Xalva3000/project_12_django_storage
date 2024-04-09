@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<p>{% include 'pagination.html' %}</p>
+{% for s_i in storage_items %}
+    <ul>
+        <li>{{ s_i }}</li>
+    </ul>
+{% endfor %}
+<p>{% include 'pagination.html' %}</p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+    {% for contract in contracts %}
+        <div>
+        <ul>{{ contract }}</ul>
+        {% for spec in contract.specifications.all %}
+        <li>{{ spec }}</li>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

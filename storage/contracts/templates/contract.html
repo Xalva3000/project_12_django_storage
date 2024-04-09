@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="card 
+        {% if contract.executed and contract.paid %}
+        border-success
+        {% elif contract.executed and not contract.paid %}
+        border-danger
+        {% elif contract.reserved and not contract.executed %}
+        border-warning
+        {% else %}
+        border-secondary
+        {% endif %}
+           mb-3" style="max-width: 50rem;">
+    <div class="card-header">#{{ contract.pk }}--
+        {{ contract.date_plan|date:"d M Y" }}--{{ contract.contract_type }} {{ contract.contractor.name }} 
+        {{ contract.reserved|yesno:"1,0" }}|{{ contract.executed|yesno:"1,0" }}|{{ contract.paid|yesno:"1,0" }}
+         || менеджер: {{ contract.manager }}</div>
+
+    
+<div class="btn-group m-3" role="group" aria-label="Basic mixed styles example">
+    {% if contract.contract_type == 'Продажа' %}
+    <a href="{% url 'contracts:contract_reserve' contract.pk %}">
+        {% if contract.reserved %}
+        <button type="button"class="btn btn-secondary">Снять бронь</button>
+        {% else %}
+        <button type="button" class="btn btn-warning">Забронировать</button>
+        {% endif %}
+    </a>
+    {% else %}
+    <a href="{% url 'contracts:contract_reserve' contract.pk %}">
+        {% if contract.reserved %}
+        <button type="button" class="btn btn-secondary">Не учитывать</button>
+        {% else %}
+        <button type="button" class="btn btn-warning">Учитывать</button>
+        {% endif %}
+    </a>
+    {% endif %}
+
+
+    <a href="{% url 'contracts:contract_execution' contract.pk %}">
+    {% if contract.contract_type == 'Продажа' %}
+        {% if contract.executed %}
+        <button type="button" class="btn btn-secondary">Откат отгрузки</button>
+        {% else %}
+        <button type="button" class="btn btn-danger">Отгрузка</button>
+        {% endif %}
+
+    {% else %}
+        {% if contract.executed %}
+        <button type="button" class="btn btn-secondary">Откат прихода</button>
+        {% else %}
+        <button type="button" class="btn btn-danger">Оприходование</button>
+        {% endif %}
+    {% endif %}
+    </a>
+
+     <a href="{% url 'contracts:contract_payment' contract.pk %}">
+        {% if contract.paid %}
+        <button type="button" class="btn btn-secondary">Откат оплаты</button>
+        {% else %}
+        <button type="button" class="btn btn-success">Регистрация оплаты</button>
+        {% endif %}
+    </a>
+</div>
+<div class="btn-group m-3" role="group">
+    <a href="{% url 'contracts:contract_update' contract.pk %}">
+        <button type="button" class="btn btn-secondary">Редактировать</button>
+    </a>
+
+    {% if not contract.reserved %}
+    
+        {% if contract.date_delete %}
+        <a href="{% url 'contracts:contract_delete' contract.pk %}">
+            <button type="button" class="btn btn-secondary">Восстановить удаленный контракт</button>
+        </a>
+        {% else %}
+        <a href="{% url 'contracts:contract_delete' contract.pk %}">
+            <button type="button" class="btn btn-secondary">Удалить контракт</button>
+        </a>
+        {% endif %}
+    {% endif %}
+</div>
+    <div class="card-body
+        {% if contract.executed and contract.paid %}
+        text-success
+        {% elif contract.executed and not contract.paid %}
+        text-danger
+        {% elif contract.reserved and not contract.executed %}
+        text-warning
+        {% else %}
+        text-secondary
+        {% endif %}">
+        <h5 class="card-title">
+          <p>Планируемая дата исполнения: {{ contract.date_plan }}</p>
+          <p>Дата исполнения: {{ contract.date_execution|default:"Не исполнен" }}</p>
+          {% if contract.date_delete %}
+          <p>Дата удаления: {{ contract.date_delete }}</p>
+          {% endif %}
+        </h5>
+        <p class="card-text">
+          <ul>
+              {% for spec in contract.specifications.all %}
+              <li>{{ spec }}</li>
+              {% endfor %}
+          </ul>
+          <hr>
+          <p class="mb=3">Суммарный вес: {{ tonnage|intcomma }} кг</p>
+        
+
+        <form method="post" action="{% url 'contracts:change_note' contract.pk %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- <label for="new_note">:</label> -->
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Заметка/Сохранить</button></p>
+            <p><textarea rows="6" cols="60" name="new_note" id="new_note" placeholder="{{ contract.note }}"></textarea>
+            
+        </form>
+
+        </p>
+      </div>
+<div class="container-params m-3">
+    {% if not contract.reserved %}
+    <div>
+        <form action="add_specifications/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- <label for="spec_amount">: </label> -->
+            <input id="spec_amount" type="number" name="spec_amount" value="0">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Добавить спецификации</button>
+        </form>
+    </div>
+    {% endif %}
+
+<form method="post" action="{% url 'contracts:change_manager_share' contract.pk %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- <label for="new_share">Оплата менеджеру:</label> -->
+    <input name="new_share" id="new_share" type="number" value="0">
+    <button type="submit" class="btn btn-sm btn-outline-secondary">Оплата менеджеру</button>
+</form>
+</div>
+<div class=" card container-payments m-3">
+    <table class="table table-striped">
+        
+        <tr>
+            <td>№</td>
+            <td>Дата</td>
+            <td>Сумма</td>
+        </tr>
+        {% for p in contract.payments.all %}
+        <tr>
+            <td>{{ p.pk }}</td>
+            <td>{{ p.date_payment }}</td>
+            <td>{{ p.amount|intcomma }} руб.</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2">
+                <form method="post" action="{% url 'contracts:add_payment' contract.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- <input name="new_payment_date" id="new_payment" type="date"> -->
+                    <input name="new_payment" id="new_payment" type="number" value="0">
+                <td>
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Новый платеж</button></td>
+                </form>
+            </td>
+        </tr>
+    </table>
+    
+    <p>Общая сумма контракта: {{ total|intcomma }}</p>
+    {% if contract.contract_type == "Продажа" %}
+    <p>Товар закуплен на сумму: {{ purchase|intcomma }}</p>
+    <p>Разница: {{ profit|intcomma }}</p>
+    {% endif %}
+    <p>Платежей на сумму: {{ payments_sum|intcomma }}</p>
+    <p>Осталось к уплате: {{ balance|intcomma }}</p>
+    <p>Доля менеджера {{ contract.manager_share }}</p>
+
+</div>
+</div>
+
+
+{% endblock %}

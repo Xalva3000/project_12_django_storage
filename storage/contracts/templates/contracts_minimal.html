@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'filter_form_drop.html' %}
+<!--  -->
+    <div class="container-info">Кол-во контрактов соответствующих фильтру {{ contracts|length }}</div>
+    
+    <div class="container-content">
+      <!--  -->
+      <div class="pagination-upper">
+        <p>{% include 'pagination.html' %}</p>
+      </div>
+      <!--  -->
+        {% for contract in contracts %}
+        
+          <div class="
+          {% if contract.executed and contract.paid %}
+          card bg-success-subtle mb-1
+          {% elif contract.executed and not contract.paid %}
+          card bg-danger-subtle mb-1
+          {% elif contract.reserved and not contract.executed %}
+          card bg-warning-subtle mb-1
+          {% else %}
+          card bg-secondary-subtle mb-1
+          {% endif %}">
+            <div class="card-text"><a href="{% url 'contracts:contract' contract.pk %}">
+            #{{ contract.pk }}--
+              {{ contract.date_plan|date:"d M Y" }}--
+              {% if contract.contract_type == 'Покупка' %}
+              <b class="text-danger">Завоз</b>
+              {% else %}
+              {% endif %}
+               {{ contract.contractor.name }} 
+              {{ contract.reserved|yesno:"1,0" }}|{{ contract.executed|yesno:"1,0" }}|{{ contract.paid|yesno:"1,0" }}</a>
+            </div>
+          </div>
+
+        {% endfor %}
+      <!--  -->
+      <div class="pagination-lower">
+        <p>{% include 'pagination.html' %}</p>
+      </div>
+    </div>
+{% endblock %}
+
