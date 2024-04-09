@@ -45,7 +45,7 @@ class Specification(models.Model):
         on_delete=models.PROTECT, null=True,
         related_name='specifications',
         verbose_name='Товар со клада')
-    variable_weight = models.DecimalField(decimal_places=2, max_digits=7, blank=False, null=False)
+    variable_weight = models.DecimalField(decimal_places=2, max_digits=7, blank=False, null=False, default=1)
     quantity = models.IntegerField(default="0", blank=False, null=False)
     price = models.DecimalField(decimal_places=2, max_digits=7, blank=False, null=False, default=0)
     contract = models.ForeignKey(

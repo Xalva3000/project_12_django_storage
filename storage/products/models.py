@@ -14,9 +14,9 @@ class Product(models.Model):
         FIXED = 1, 'фиксированный'
 
     fish = models.CharField(max_length=50, verbose_name='Название рыбы')
-    cutting = models.CharField(max_length=5, verbose_name='Разделка')
+    cutting = models.CharField(max_length=10, blank=True, verbose_name='Разделка')
     size = models.CharField(max_length=15, blank=True, verbose_name='Размер')
-    producer = models.CharField(max_length=50 ,verbose_name='Производитель')
+    producer = models.CharField(max_length=50, blank=True, verbose_name='Производитель')
     package = models.CharField(max_length=15, blank=True, default='мешок', verbose_name='Упаковка')
     fixed_weight = models.BooleanField(choices=WeightType.choices, default=WeightType.FIXED, blank=False, verbose_name='Маркировка веса')
     weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name='Вес')
