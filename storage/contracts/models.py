@@ -23,7 +23,7 @@ class Contract(models.Model):
     date_create = models.DateField(auto_now_add=True)
     date_execution = models.DateField(blank=True, null=True)
     date_delete = models.DateField(blank=True, null=True)
-    manager_share = models.DecimalField(decimal_places=2, max_digits=7, blank=True, null=True, default=0)
+    manager_share = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True, default=0)
 
     contractor = models.ForeignKey('contractors.Contractor', on_delete=models.PROTECT,
                                    null=True, related_name='contracts')
@@ -55,7 +55,6 @@ class Specification(models.Model):
         verbose_name='Контракт')
     date_create = models.DateField(auto_now_add=True)
     date_update = models.DateField(auto_now=True)
-
 
     def __str__(self):
         weight = ''.join(['(', str(self.variable_weight), 'кг)'])

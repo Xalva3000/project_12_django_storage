@@ -12,11 +12,13 @@
       <!--  -->
         {% for contract in contracts %}
           <div class="
-          {% if contract.executed and contract.paid %}
+          {% if contract.reserved and contract.executed and contract.paid %}
           card p-1 mb-1 bg-success-subtle text-dark
-          {% elif contract.executed and not contract.paid %}
+          {% elif contract.reserved and contract.executed and not contract.paid %}
           card p-1 mb-1 bg-danger-subtle text-danger-emphasis
-          {% elif contract.reserved and not contract.executed %}
+          {% elif contract.reserved and not contract.executed and contract.paid %}
+          card p-1 mb-1 bg-primary-subtle text-primary-emphasis
+          {% elif contract.reserved and not contract.executed and not contract.paid %}
           card p-1 mb-1 bg-warning-subtle text-warning-emphasis
           {% else %}
           card p-1 mb-1 bg-secondary-subtle text-secondary-emphasis

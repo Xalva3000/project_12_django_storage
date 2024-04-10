@@ -56,7 +56,33 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filterset.form
+        self.get_stats(self.queryset, Contract.ContractType.INCOME)
+        self.get_stats(self.queryset, Contract.ContractType.OUTCOME)
         return context
+
+    @staticmethod
+    def get_stats(queryset, contract_type=Contract.ContractType.INCOME):
+        qs = queryset.filter(contract_type=contract_type)
+        weight = [c.specifications.aggregate(weight=Sum(F('quantity') * F('variable_weight'))) for c in qs]
+        weight_c = sum([dct['weight'] for dct in weight])
+        cost = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('price'))) for c in qs]
+        cost_c = sum([dct['cost'] for dct in cost])
+        payments = [c.payments.aggregate(payment=Sum('amount')) for c in qs]
+        if payments:
+            payments_c = sum([dct['payment'] for dct in payments if dct['payment']])
+            print(payments_c)
+        bonuses = qs.values('manager__username').annotate(bonuses=Sum(F('payments__amount')))
+        bonuses = {}
+        bonuses_c = {}
+        for dct in bonuses:
+            if dct['bonuses']:
+                bonuses_c[dct['manager__username']] = bonuses_c.get('manager__username', 0) + dct['bonuses']
+        print(bonuses_c)
+        if contract_type == Contract.ContractType.OUTCOME:
+            expenses = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('storage_item__price'))) for c in qs]
+            expenses_c = sum([dct['cost'] for dct in expenses])
+            print(expenses_c)
+        print(weight_c, cost_c, bonuses_c)
 
 class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract

@@ -3,11 +3,13 @@
 
 {% block content %}
 <div class="card 
-        {% if contract.executed and contract.paid %}
+        {% if contract.reserved and contract.executed and contract.paid %}
         border-success
-        {% elif contract.executed and not contract.paid %}
+        {% elif contract.reserved and contract.executed and not contract.paid %}
         border-danger
-        {% elif contract.reserved and not contract.executed %}
+        {% elif contract.reserved and not contract.executed and contract.paid %}
+        border-primary
+        {% elif contract.reserved and not contract.executed and not contract.paid %}
         border-warning
         {% else %}
         border-secondary
@@ -83,11 +85,13 @@
     {% endif %}
 </div>
     <div class="card-body
-        {% if contract.executed and contract.paid %}
+        {% if contract.reserved and contract.executed and contract.paid %}
         text-success
-        {% elif contract.executed and not contract.paid %}
+        {% elif contract.reserved and contract.executed and not contract.paid %}
         text-danger
-        {% elif contract.reserved and not contract.executed %}
+        {% elif contract.reserved and not contract.executed and contract.paid %}
+        text-primary
+        {% elif contract.reserved and not contract.executed and not contract.paid %}
         text-warning
         {% else %}
         text-secondary
@@ -173,7 +177,7 @@
     {% endif %}
     <p>Платежей на сумму: {{ payments_sum|intcomma }}</p>
     <p>Осталось к уплате: {{ balance|intcomma }}</p>
-    <p>Доля менеджера {{ contract.manager_share }}</p>
+    <p>Доля менеджера {{ contract.manager_share|intcomma }}</p>
 
 </div>
 </div>

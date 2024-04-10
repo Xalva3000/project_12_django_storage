@@ -14,11 +14,13 @@
         {% for contract in contracts %}
         
           <div class="
-          {% if contract.executed and contract.paid %}
+          {% if contract.reserved and contract.executed and contract.paid %}
           card bg-success-subtle mb-1
-          {% elif contract.executed and not contract.paid %}
+          {% elif contract.reserved and contract.executed and not contract.paid %}
           card bg-danger-subtle mb-1
-          {% elif contract.reserved and not contract.executed %}
+          {% elif contract.reserved and not contract.executed and contract.paid %}
+          card bg-primary-subtle mb-1
+          {% elif contract.reserved and not contract.executed and not contract.paid %}
           card bg-warning-subtle mb-1
           {% else %}
           card bg-secondary-subtle mb-1
