@@ -70,7 +70,7 @@ class Specification(models.Model):
         return look
 
 
-class Payments(models.Model):
+class Payment(models.Model):
     contract = models.ForeignKey(
         'contracts.Contract',
         on_delete=models.PROTECT, null=True,

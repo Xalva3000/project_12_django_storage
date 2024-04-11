@@ -1,15 +1,16 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 from django.forms import inlineformset_factory
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from sql_util.aggregates import SubquerySum
 
 from .forms import AddContractForm, AddSpecificationForm, SpecificationFormSet
-from .models import Contract, Specification, Payments
+from .models import Contract, Specification, Payment
 from products.utils import DataMixin, tools, menu
 from .filters import ContractFilter
 
@@ -39,6 +40,7 @@ class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):
         context['form'] = self.filterset.form
         return context
 
+
 class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
     template_name = "contracts_minimal.html"
@@ -46,7 +48,15 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     title_page = "Контракты"
     category_page = "contracts"
     paginate_by = 50
-    queryset = Contract.objects.filter(date_delete__isnull=True).order_by('-date_plan', '-pk')
+    # queryset = Contract.objects.filter(date_delete__isnull=True).order_by('-date_plan', '-pk')
+
+    queryset = Contract.objects.filter(
+        date_delete__isnull=True
+    ).annotate(
+        total_weight=SubquerySum(F('specifications__variable_weight') * F('specifications__quantity')),
+        total_sum=SubquerySum(F('specifications__variable_weight') * F('specifications__quantity') * F('specifications__price')),
+        total_payments=SubquerySum(F('payments__amount'))).order_by('-date_plan', '-pk')
+
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -56,33 +66,33 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filterset.form
-        self.get_stats(self.queryset, Contract.ContractType.INCOME)
-        self.get_stats(self.queryset, Contract.ContractType.OUTCOME)
+        context['income_stats'] = self.get_stats(self.get_queryset(), Contract.ContractType.INCOME)
+        context['outcome_stats'] = self.get_stats(self.get_queryset(), Contract.ContractType.OUTCOME)
         return context
 
     @staticmethod
     def get_stats(queryset, contract_type=Contract.ContractType.INCOME):
         qs = queryset.filter(contract_type=contract_type)
-        weight = [c.specifications.aggregate(weight=Sum(F('quantity') * F('variable_weight'))) for c in qs]
-        weight_c = sum([dct['weight'] for dct in weight])
-        cost = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('price'))) for c in qs]
-        cost_c = sum([dct['cost'] for dct in cost])
+        result = {}
+        weight = [c.specifications.aggregate(weight=Sum(F('quantity') * F('variable_weight'))) for c in qs if c.specifications.all()]
+        result['weight'] = sum([dct['weight'] for dct in weight])
+        cost = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('price'))) for c in qs if c.specifications.all()]
+        result['cost'] = sum([dct['cost'] for dct in cost])
         payments = [c.payments.aggregate(payment=Sum('amount')) for c in qs]
         if payments:
-            payments_c = sum([dct['payment'] for dct in payments if dct['payment']])
-            print(payments_c)
-        bonuses = qs.values('manager__username').annotate(bonuses=Sum(F('payments__amount')))
-        bonuses = {}
+            result['payments'] = sum([dct['payment'] for dct in payments if dct['payment']])
+        bonuses = qs.values('manager__username').annotate(bonuses=Sum(F('manager_share')))
         bonuses_c = {}
         for dct in bonuses:
             if dct['bonuses']:
                 bonuses_c[dct['manager__username']] = bonuses_c.get('manager__username', 0) + dct['bonuses']
-        print(bonuses_c)
+        result['bonuses'] = bonuses_c
         if contract_type == Contract.ContractType.OUTCOME:
-            expenses = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('storage_item__price'))) for c in qs]
-            expenses_c = sum([dct['cost'] for dct in expenses])
-            print(expenses_c)
-        print(weight_c, cost_c, bonuses_c)
+            expenses = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('storage_item__price'))) for c in qs if c.specifications.all()]
+            result['expenses'] = sum([dct['cost'] for dct in expenses])
+            result['expected'] = result['cost'] - result['expenses']
+        return result
+
 
 class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
@@ -206,7 +216,7 @@ def change_note(request, pk):
 
 def add_payment(request, pk):
     new_payment = int(request.POST.get('new_payment', 0))
-    payment = Payments.objects.create(contract_id=pk, amount=new_payment)
+    payment = Payment.objects.create(contract_id=pk, amount=new_payment)
     payment.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)

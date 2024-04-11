@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Contract, Specification
+from .models import Contract, Specification, Payment
 
 
 @admin.register(Contract)
@@ -20,10 +20,19 @@ class ContractAdmin(admin.ModelAdmin):
 
 @admin.register(Specification)
 class SpecificationAdmin(admin.ModelAdmin):
-    fields = ['contract', 'product', 'quantity', 'price']
-    list_display = ('id', 'contract', 'product', 'quantity', 'price')
+    fields = ['contract', 'product', 'storage_item', 'quantity', 'price']
+    list_display = ('id', 'contract', 'product', 'storage_item', 'quantity', 'price')
     readonly_fields = []
     list_display_links = ('product',)
     ordering = ['contract']
     list_per_page = 8
 # search_fields = []
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    fields = ['contract', 'date_payment', 'amount']
+    list_display = ('id', 'contract', 'date_payment', 'amount')
+    readonly_fields = []
+    list_display_links = ('amount',)
+    ordering = ['id', 'contract']
+    list_per_page = 10
