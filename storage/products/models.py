@@ -20,6 +20,7 @@ class Product(models.Model):
     package = models.CharField(max_length=15, blank=True, default='мешок', verbose_name='Упаковка')
     fixed_weight = models.BooleanField(choices=WeightType.choices, default=WeightType.FIXED, blank=False, verbose_name='Маркировка веса')
     weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name='Вес')
+    note = models.TextField(blank=True)
     date_create = models.DateField(auto_now_add=True, verbose_name='Дата создания')
     date_update = models.DateField(auto_now=True, verbose_name='Дата изменения')
 

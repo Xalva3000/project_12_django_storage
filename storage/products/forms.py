@@ -7,5 +7,5 @@ class AddProductForm(models.ModelForm):
 	class Meta:
 		model = Product
 		fields = ['fish', 'cutting','size','producer','package',
-		          'fixed_weight','weight']
+		          'fixed_weight','weight', 'note']
 
