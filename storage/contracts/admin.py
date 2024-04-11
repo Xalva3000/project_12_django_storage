@@ -30,9 +30,9 @@ class SpecificationAdmin(admin.ModelAdmin):
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    fields = ['contract', 'date_payment', 'amount']
-    list_display = ('id', 'contract', 'date_payment', 'amount')
+    fields = ['contract', 'amount']
+    list_display = ('id', 'contract', 'amount')
     readonly_fields = []
-    list_display_links = ('amount',)
+    list_display_links = ('id', 'contract', 'amount',)
     ordering = ['id', 'contract']
     list_per_page = 10

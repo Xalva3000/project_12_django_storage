@@ -39,21 +39,21 @@ h1 {
     margin: 3px;
     padding: 3px;
 }
-
+/* 
 .card>.executed {
-    /* display: inline; */
+    display: inline;
     background-color: rgb(163, 216, 170);
 }
 
 .card>.paid {
-    /* display: inline; */
+    display: inline;
     background-color: rgb(223, 217, 163);
 }
 
 .card>.reserved {
-    /* display: inline; */
+    display: inline;
     background-color: rgb(216, 175, 163);
-}
+} */
 
 
 @media (max-width: 630px) {

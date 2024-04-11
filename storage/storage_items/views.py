@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, F
 from django.shortcuts import render
 from django.views.generic import ListView
 
@@ -17,7 +17,8 @@ class StorageItemsList(LoginRequiredMixin, DataMixin, ListView):
     paginate_by = 100
 
     def get_queryset(self):
-        return StorageItem.not_zero.order_by('product__fish', 'price')
+        return StorageItem.not_zero.annotate(weight_available=Sum(F('product__weight') * F('available')),
+                                             weight_stored=Sum(F('product__weight') * F('stored'))).order_by('product__fish', 'price')
 
 
 class StorageItemsGroupList(LoginRequiredMixin, DataMixin, ListView):

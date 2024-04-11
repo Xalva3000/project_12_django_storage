@@ -12,19 +12,6 @@
 </head>
 
 <body>
-<!--  -->
-<!-- <div class="navbar">
-    <div class="drop">
-        <button class="nav-button">&#9776;</button>
-        <div class="mainmenu">
-            {% for i in menu %}
-            <a href="{% url i.url_name %}">{{i.title}}</a>
-            {% endfor %}
-        </div>
-    </div> -->
-
-
-    
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -41,7 +28,7 @@
               </li>
             {% endfor %}
             </ul>
-            <!-- aria-current="page" -->
+
             
           </div>
           <div style="display: flex; justify-content: flex-end;">
@@ -66,12 +53,9 @@
         </div>
         
       </nav>
-    
+  
       
-
-      
-    <div class="clear"></div>
-</div>
+    <!-- <div class="clear"></div> -->
 <!--  -->
 <div class="main-container">
 
@@ -94,7 +78,7 @@
     <div class="right-bar">
         <ul class="list-group">
             {% for i in tools %}
-            <li class="list-group-item"><a href="http://127.0.0.1:8000/{{ i.path }}">{{i.title}}</a></li>
+            <li class="list-group-item"><a href="{% url i.path %}">{{i.title}}</a></li>
             {% endfor %}
         </ul>
     </div>

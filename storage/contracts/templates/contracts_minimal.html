@@ -1,92 +1,108 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block content %}
+<div class="card"> 
 {% include 'filter_form_drop.html' %}
-<!--  -->
+</div>
+
 <div class="card container-info"> 
   <table class="table table-striped table-hover">
     <tr>
       <td colspan="2">Кол-во контрактов соответствующих фильтру</td>
       <td>{{ contracts|length }}</td>
     </tr>
-    </table>
-    </div>
-    <div class="card container-info"> 
-      <table class="table table-striped table-hover">
-        <thead>
-        </thead>
-        <tbody>
-          
+  </table>
+</div>
+
+<div class="card"> 
+  <table class="table table-striped table-hover">
+    <thead>
+          <tr>
+              <th scope="col" class="w-20"></th>
+              <th scope="col" class="w-30"></th>
+              <th scope="col" class="w-50"></th>
+          </tr>
+  </thead>
+    <tbody>
           <tr>
             <td><b>Завоз</b></td>
             <td>Суммарный вес</td>
-            <td>{{ income_stats.weight }}</td>
+            <td>{{ income_stats.weight|intcomma }}</td>
           </tr>
           <tr>
             <td></td>
             <td>Суммарная стоимость</td>
-            <td>{{ income_stats.cost }}</td>
+            <td>{{ income_stats.cost|intcomma }}</td>
           </tr>
           <tr>
             <td></td>
             <td>Из них оплачено</td>
-            <td>{{ income_stats.payments }}</td>
+            <td>{{ income_stats.payments|intcomma }}</td>
           </tr>
           {% for manager, amount in income_stats.bonuses.items %}
           <tr>
             <td><b>Премиальные</b></td>
-            <td>Доля {{ manager }}</td>
-            <td>{{ amount }}</td>
+            <td>{{ manager }}</td>
+            <td>{{ amount|intcomma }}</td>
           </tr>
           {% endfor %}
-        </tbody>
-        </table>
-        </div>
-        <div class="card container-info"> 
-        <table class="table table-striped table-hover">
-        <tbody>
+    </tbody>
+  </table>
+</div>
+
+<div class="card"> 
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="w-20"></th>
+        <th scope="col" class="w-30"></th>
+        <th scope="col" class="w-50"></th>
+    </tr>
+</thead>
+    <tbody>
         <tr>
           <td><b>Отгрузки</b></td>
           <td>Суммарный вес</td>
-          <td>{{ outcome_stats.weight }}</td>
+          <td>{{ outcome_stats.weight|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Себестоимость</td>
-          <td>{{ outcome_stats.expenses }}</td>
+          <td>{{ outcome_stats.expenses|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Суммарная стоимость</td>
-          <td>{{ outcome_stats.cost }}</td>
+          <td>{{ outcome_stats.cost|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Из них оплачено</td>
-          <td>{{ outcome_stats.payments }}</td>
+          <td>{{ outcome_stats.payments|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Планируемый доход</td>
-          <td>{{ outcome_stats.expected }}</td>
+          <td>{{ outcome_stats.expected|intcomma }}</td>
         </tr>
         {% for manager, amount in outcome_stats.bonuses.items %}
         <tr>
           <td><b>Премиальные</b></td>
-          <td>Доля {{ manager }}</td>
-          <td>{{ amount }}</td>
+          <td>{{ manager }}</td>
+          <td>{{ amount|intcomma }}</td>
         </tr>
         {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    
+    </tbody>
+  </table>
+</div>
+
     <div class="container-content">
-      <!--  -->
+
       <div class="pagination-upper">
         <p>{% include 'pagination.html' %}</p>
       </div>
-      <!--  -->
+
         {% for contract in contracts %}
         
           <div class="
@@ -118,10 +134,11 @@
           </div>
 
         {% endfor %}
-      <!--  -->
+
       <div class="pagination-lower">
         <p>{% include 'pagination.html' %}</p>
       </div>
+
     </div>
 {% endblock %}
 
