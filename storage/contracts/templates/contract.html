@@ -110,7 +110,7 @@
               {% endfor %}
           </ul>
           <hr>
-          <p class="mb=3">Суммарный вес: {{ tonnage|intcomma }} кг</p>
+          <p class="mb=3">Суммарный вес: {{ tonnage|floatformat:2|intcomma }} кг</p>
         
 
         <form method="post" action="{% url 'contracts:change_note' contract.pk %}" enctype="multipart/form-data">
@@ -170,14 +170,14 @@
         </tr>
     </table>
     
-    <p>Общая сумма контракта: {{ total|intcomma }}</p>
+    <p>Общая сумма контракта: {{ total|floatformat:2|intcomma }}</p>
     {% if contract.contract_type == "Продажа" %}
-    <p>Товар закуплен на сумму: {{ purchase|intcomma }}</p>
-    <p>Разница: {{ profit|intcomma }}</p>
+    <p>Товар закуплен на сумму: {{ purchase|floatformat:2|intcomma }}</p>
+    <p>Разница: {{ profit|floatformat:2|intcomma }}</p>
     {% endif %}
-    <p>Платежей на сумму: {{ payments_sum|intcomma }}</p>
-    <p>Осталось к уплате: {{ balance|intcomma }}</p>
-    <p>Доля менеджера {{ contract.manager_share|intcomma }}</p>
+    <p>Платежей на сумму: {{ payments_sum|floatformat:2|intcomma }}</p>
+    <p>Осталось к уплате: {{ balance|floatformat:2|intcomma }}</p>
+    <p>Доля менеджера {{ contract.manager_share|floatformat:2|intcomma}}</p>
 
 </div>
 </div>

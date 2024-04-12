@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 
 {% block content %}
@@ -27,12 +28,12 @@
             {% if s_i.available < 0 %}
             class="text-danger"
             {% endif %}
-            >{{ s_i.available }}шт / {{ s_i.weight_available }}кг</td>
+            >{{ s_i.available|floatformat:2|intcomma }}шт / {{ s_i.weight_available|floatformat:2|intcomma }}кг</td>
             <td 
             {% if s_i.stored < 0 %}
             class="text-danger"
             {% endif %}
-            >{{ s_i.stored }}шт / {{ s_i.weight_stored }}кг</td>
+            >{{ s_i.stored|floatformat:2|intcomma }}шт / {{ s_i.weight_stored|floatformat:2|intcomma }}кг</td>
           </tr>
         {% endfor %}
     </tbody>

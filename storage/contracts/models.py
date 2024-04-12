@@ -61,12 +61,12 @@ class Specification(models.Model):
         if self.product:
             look = f"{self.product.fish} {self.product.cutting} " \
                    f"{self.product.size} {self.product.producer}:: " \
-                    f"{weight} x {self.quantity} = {self.variable_weight * self.quantity:,.0f}кг по {self.price}р"
+                    f"{weight} x {self.quantity} = {self.variable_weight * self.quantity:,.2f}кг по {self.price}р"
         elif self.storage_item:
             look = f"{self.storage_item.product.fish} {self.storage_item.product.cutting} " \
                    f"{self.storage_item.product.size} {self.storage_item.product.producer}" \
                    f" (закуп:{self.storage_item.price})::{weight} X {self.quantity}=" \
-                   f"{self.variable_weight*self.quantity:,.0f}кг по {self.price}р"
+                   f"{self.variable_weight*self.quantity:,.2f}кг по {self.price}р"
         return look
 
 

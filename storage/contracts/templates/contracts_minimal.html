@@ -28,23 +28,23 @@
           <tr>
             <td><b>Завоз</b></td>
             <td>Суммарный вес</td>
-            <td>{{ income_stats.weight|intcomma }}</td>
+            <td>{{ income_stats.weight|floatformat:2|intcomma }}</td>
           </tr>
           <tr>
             <td></td>
             <td>Суммарная стоимость</td>
-            <td>{{ income_stats.cost|intcomma }}</td>
+            <td>{{ income_stats.cost|floatformat:2|intcomma }}</td>
           </tr>
           <tr>
             <td></td>
             <td>Из них оплачено</td>
-            <td>{{ income_stats.payments|intcomma }}</td>
+            <td>{{ income_stats.payments|floatformat:2|intcomma }}</td>
           </tr>
           {% for manager, amount in income_stats.bonuses.items %}
           <tr>
             <td><b>Премиальные</b></td>
             <td>{{ manager }}</td>
-            <td>{{ amount|intcomma }}</td>
+            <td>{{ amount|floatformat:2|intcomma }}</td>
           </tr>
           {% endfor %}
     </tbody>
@@ -64,33 +64,33 @@
         <tr>
           <td><b>Отгрузки</b></td>
           <td>Суммарный вес</td>
-          <td>{{ outcome_stats.weight|intcomma }}</td>
+          <td>{{ outcome_stats.weight|floatformat:2|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Себестоимость</td>
-          <td>{{ outcome_stats.expenses|intcomma }}</td>
+          <td>{{ outcome_stats.expenses|floatformat:2|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Суммарная стоимость</td>
-          <td>{{ outcome_stats.cost|intcomma }}</td>
+          <td>{{ outcome_stats.cost|floatformat:2|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Из них оплачено</td>
-          <td>{{ outcome_stats.payments|intcomma }}</td>
+          <td>{{ outcome_stats.payments|floatformat:2|intcomma }}</td>
         </tr>
         <tr>
           <td></td>
           <td>Планируемый доход</td>
-          <td>{{ outcome_stats.expected|intcomma }}</td>
+          <td>{{ outcome_stats.expected|floatformat:2|intcomma }}</td>
         </tr>
         {% for manager, amount in outcome_stats.bonuses.items %}
         <tr>
           <td><b>Премиальные</b></td>
           <td>{{ manager }}</td>
-          <td>{{ amount|intcomma }}</td>
+          <td>{{ amount|floatformat:2|intcomma }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -126,9 +126,9 @@
               {% endif %}
                {{ contract.contractor.name }} 
               {{ contract.reserved|yesno:"1,0" }}|{{ contract.executed|yesno:"1,0" }}|{{ contract.paid|yesno:"1,0" }}
-              {{ contract.total_weight|default:0 }}-
-              {{ contract.total_sum|default:0 }}/
-              {{ contract.total_payments|default:0 }}
+              {{ contract.total_weight|default:0|floatformat:2|intcomma }}-
+              {{ contract.total_sum|default:0|floatformat:2|intcomma }}/
+              {{ contract.total_payments|default:0|floatformat:2|intcomma }}
             </a>
             </div>
           </div>
