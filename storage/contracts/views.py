@@ -85,7 +85,7 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
         bonuses_c = {}
         for dct in bonuses:
             if dct['bonuses']:
-                bonuses_c[dct['manager__username']] = bonuses_c.get('manager__username', 0) + dct['bonuses']
+                bonuses_c[dct['manager__username']] = bonuses_c.get(dct['manager__username'], 0) + dct['bonuses']
         result['bonuses'] = bonuses_c
         if contract_type == Contract.ContractType.OUTCOME:
             expenses = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('storage_item__price'))) for c in qs if c.specifications.all()]
