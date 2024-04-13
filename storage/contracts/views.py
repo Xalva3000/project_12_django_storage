@@ -74,24 +74,40 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     def get_stats(queryset, contract_type=Contract.ContractType.INCOME):
         qs = queryset.filter(contract_type=contract_type)
         result = {}
-        weight = [c.specifications.aggregate(weight=Sum(F('quantity') * F('variable_weight'))) for c in qs if c.specifications.all()]
-        result['weight'] = sum([dct['weight'] for dct in weight])
-        cost = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('price'))) for c in qs if c.specifications.all()]
-        result['cost'] = sum([dct['cost'] for dct in cost])
-        payments = [c.payments.aggregate(payment=Sum('amount')) for c in qs]
-        if payments:
-            result['payments'] = sum([dct['payment'] for dct in payments if dct['payment']])
-        bonuses = qs.values('manager__username').annotate(bonuses=Sum(F('manager_share')))
-        bonuses_c = {}
-        for dct in bonuses:
-            if dct['bonuses']:
-                bonuses_c[dct['manager__username']] = bonuses_c.get(dct['manager__username'], 0) + dct['bonuses']
-        result['bonuses'] = bonuses_c
+        weight = qs.aggregate(w=Sum(F('total_weight')))
+        result['weight'] = weight['w']
+        cost = qs.aggregate(s=Sum(F('total_sum')))
+        result['cost'] = cost['s']
+        payments = qs.aggregate(p=Sum(F('total_payments')))
+        result['payments'] = payments['p']
+
+        # weight = [c.specifications.aggregate(weight=Sum(F('quantity') * F('variable_weight'))) for c in qs if c.specifications.all()]
+        # result['weight'] = sum([dct['weight'] for dct in weight])
+        #
+        # cost = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('price'))) for c in qs if c.specifications.all()]
+        # result['cost'] = sum([dct['cost'] for dct in cost])
+        # payments = [c.payments.aggregate(payment=Sum('amount')) for c in qs]
+        # if payments:
+        #     result['payments'] = sum([dct['payment'] for dct in payments if dct['payment']])
+
+
+        bonuses_qs = qs.values('id', 'manager__username', 'manager_share')
+        lst = []
+        bonuses = {}
+        for dct in bonuses_qs:
+            if dct['id'] not in lst and dct['manager_share']:
+                lst.append(dct['id'])
+                bonuses[dct['manager__username']] = bonuses.get(dct['manager__username'], 0) + dct['manager_share']
+
+        result['bonuses'] = bonuses
+
         if contract_type == Contract.ContractType.OUTCOME:
             expenses = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('storage_item__price'))) for c in qs if c.specifications.all()]
             result['expenses'] = sum([dct['cost'] for dct in expenses])
-            result['expected'] = result['cost'] - result['expenses']
+            if result['expenses']:
+                result['expected'] = result['cost'] - result['expenses']
         return result
+
 
 
 class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
