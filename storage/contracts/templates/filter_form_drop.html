@@ -1,5 +1,5 @@
-<div class="dropdown">
-    <button type="button" class="btn btn-outline-secondary dropdown-toggle w-auto d-block" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+  <div class="dropdown d-grid gap-2">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
       Фильтр
     </button>
   
@@ -11,7 +11,8 @@
           {{ f }} {{f.errors}}
       </div>
         {% endfor %}
-      
+       
       <button type="submit" class="btn btn-primary w-auto">Фильтр</button>
+    
     </form>
   </div>
