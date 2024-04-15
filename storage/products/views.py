@@ -39,10 +39,9 @@ class AddProduct(LoginRequiredMixin, DataMixin, CreateView):
 
 class UpdateProduct(LoginRequiredMixin, DataMixin, UpdateView):
     model = Product
-    fields = ['fish', 'cutting', 'size', 'producer', 'package',
-              'fixed_weight', 'weight']
+    form_class = AddProductForm
+    # fields = ['fish', 'cutting', 'size', 'producer', 'package',]
     template_name = 'products/add_product.html'
-    # success_url = reverse_lazy('products:product')
     title_page = 'Редактирование продукта'
     category_page = 'products'
 

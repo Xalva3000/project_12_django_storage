@@ -7,7 +7,7 @@ from .models import Product
 class ProductAdmin(admin.ModelAdmin):
 	list_display = (
 		'id', 'fish', 'cutting', 'size',
-		'producer', 'package', 'weight', 'fixed_weight', 'date_create')
+		'producer', 'package', 'date_create')
 	list_display_links = ('fish',)
 	# list_editable = (
 	# 	'cutting', 'size', 'producer', 'package',

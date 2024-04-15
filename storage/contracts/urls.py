@@ -18,5 +18,7 @@ urlpatterns = [
     path('<int:pk>/change_manager_share/', views.change_manager_share, name='change_manager_share'),
     path('<int:pk>/change_note/', views.change_note, name='change_note'),
     path('<int:pk>/add_payment/', views.add_payment, name='add_payment'),
-
+    # path("add_contract/", views.add_contract, name='add_contract'),
 ]
+
+

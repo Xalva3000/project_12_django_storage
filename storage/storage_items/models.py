@@ -15,7 +15,7 @@ class StorageItem(models.Model):
         on_delete=models.PROTECT, null=True,
         related_name='product_name',
         verbose_name='Продукт')
-
+    weight = models.DecimalField(default=1, null=False, max_digits=7, decimal_places=2)
     price = models.DecimalField(default=0, null=False, max_digits=7, decimal_places=2)
     available = models.DecimalField(default=0, null=False, max_digits=7, decimal_places=2)
     stored = models.DecimalField(default=0, null=False, max_digits=7, decimal_places=2)

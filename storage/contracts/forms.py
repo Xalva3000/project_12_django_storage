@@ -16,7 +16,7 @@ class AddContractForm(models.ModelForm):
 class AddSpecificationForm(models.ModelForm):
 	class Meta:
 		model = Specification
-		fields = ['product', 'storage_item', 'variable_weight', 'quantity', 'price']
+		fields = ['product', 'storage_item', 'quantity', 'price']
 
 
 SpecificationFormSet = inlineformset_factory(

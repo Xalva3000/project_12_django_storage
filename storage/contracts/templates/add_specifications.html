@@ -7,10 +7,8 @@
         {% csrf_token %}
         {{ formset.management_form }}
         {% for form in formset %}
-            {{ form }}
+        {{form}}
         {% endfor %}
-
         <p><button type="submit">Создать</button></p>
-
     </form>
 {% endblock %}

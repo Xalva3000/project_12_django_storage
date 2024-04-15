@@ -1,5 +1,6 @@
 {% load static %}
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,11 +63,13 @@
 <div class="main-container">
 
     <div class="left-bar">
-        <ul class="list-group">
+      
         {% for i in tools %}
-        <li class="list-group-item"><a href="{% url i.path %}">{{i.title}}</a></li>
+        <div class="card">
+        <a type="button" class="btn btn-outline-dark" href="{% url i.path %}">{{i.title}}</a>
+      </div>
         {% endfor %}
-        </ul>
+        
     </div>
 
 
@@ -78,11 +81,11 @@
     </div>
 
     <div class="right-bar">
-        <ul class="list-group">
-            {% for i in tools %}
-            <li class="list-group-item"><a href="{% url i.path %}">{{i.title}}</a></li>
-            {% endfor %}
-        </ul>
+      {% for i in tools %}
+      <div class="card">
+      <a type="button" class="btn btn-outline-dark" href="{% url i.path %}">{{i.title}}</a>
+    </div>
+      {% endfor %}
     </div>
 
 </div>

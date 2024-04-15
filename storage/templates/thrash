@@ -1,0 +1,4 @@
+        {% for field in form %}
+        <p><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>
+        <div class="form-error">{{ field.errors }}</div>
+        {% endfor %}

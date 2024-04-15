@@ -24,7 +24,9 @@ def switch_income_reserve_stage(contract, *, operation: str = 'apply'):
     }
     specifications = contract.specifications.all()
     for specification in specifications:
-        storage_item = StorageItem.objects.get_or_create(product=specification.product, price=specification.price)[0]
+        storage_item = StorageItem.objects.get_or_create(product=specification.product,
+                                                         weight=specification.variable_weight,
+                                                         price=specification.price)[0]
         storage_item.available = demand[operation]['available'](storage_item, specification.quantity)
         storage_item.save()
     contract.reserved = operation == 'apply'
@@ -40,7 +42,9 @@ def switch_income_execution_stage(contract, *, operation: str = 'apply'):
     }
     specifications = contract.specifications.all()
     for specification in specifications:
-        storage_item = StorageItem.objects.get(product=specification.product, price=specification.price)
+        storage_item = StorageItem.objects.get(product=specification.product,
+                                               weight=specification.variable_weight,
+                                               price=specification.price)
         storage_item.stored = demand[operation](storage_item, specification.quantity)
         storage_item.save()
     # contract.date_plan = datetime.date.today()

@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import Sum, F, Q
 from django.forms import inlineformset_factory
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
@@ -132,7 +132,7 @@ class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
 
 class AddContract(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddContractForm
-    template_name = 'products/add_product.html'
+    template_name = 'add_contract.html'
     title_page = 'Добавление контракта'
     category_page = 'contracts'
 
@@ -143,6 +143,22 @@ class AddContract(LoginRequiredMixin, DataMixin, CreateView):
         contract = form.save(commit=False)
         contract.manager = self.request.user
         return super().form_valid(form)
+
+# def add_contract(request):
+#     if request.method == 'POST':
+#         print(request.POST)
+#         form = AddContractForm(request.POST)
+#         # print(form)
+#         # print(request.POST.get('contractor'))
+#         # if form.is_valid():
+#         #     print(request.POST)
+#         return HttpResponseRedirect(reverse('contracts:contracts'))
+#     else:
+#         form = AddContractForm()
+#     return render(request, 'add_contract.html', {'form': form,
+#                                                  # 'category_page': 'contracts',
+#                                                  'title_page': 'Добавление контракта',
+#                                                  'tools': tools['contracts']})
 
 class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
     model = Contract
@@ -206,7 +222,7 @@ class UpdateContract(LoginRequiredMixin, DataMixin, UpdateView):
     model = Contract
     form_class = AddContractForm
     # fields = ['contract_type', 'date_plan','contractor', 'note',]
-    template_name = 'products/add_product.html'
+    template_name = 'add_contract.html'
     title_page = 'Редактирование контракта'
     category_page = 'contracts'
 

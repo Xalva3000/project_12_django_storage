@@ -10,6 +10,7 @@
         <thead>
                 <tr>
                     <th scope="col">Объект</th>
+                    <th scope="col">Вес</th>
                     <th scope="col">Цена закупки</th>
                     <th scope="col">К продаже</th>
                     <th scope="col">На складе</th>
@@ -23,7 +24,8 @@
         {% endif %}
         >
             <td>{{ s_i.product }}</td>
-            <td>{{ s_i.price }}</td>
+            <td>{{ s_i.weight }} кг</td>
+            <td>{{ s_i.price }} руб</td>
             <td
             {% if s_i.available < 0 %}
             class="text-danger"

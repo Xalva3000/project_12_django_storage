@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django_filters",
     'django.contrib.humanize',
+    'crispy_forms',
+    "crispy_bootstrap4",
 ]
 
 MIDDLEWARE = [
@@ -163,3 +165,5 @@ SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
 
 # AUTH_USER_MODEL = 'users.User' # вместо auth.User
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
