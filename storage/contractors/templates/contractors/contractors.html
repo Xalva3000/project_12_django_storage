@@ -3,13 +3,17 @@
 
 {% block content %}
 <p>{% include 'pagination.html' %}</p>
+
 {% for contractor in contractors %}
-    <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{% url 'contractors:contractor' contractor.pk %}">{{ contractor }}</a>
-            <span class="badge text-bg-primary rounded-pill">{{ contractor.contracts.count }}</span>
-        </li>
-    </ul>
+
+
+<div class="card">
+    <div class="card-text"><a class="btn stretched-link" href="{% url 'contractors:contractor' contractor.pk %}">{{ contractor }}</a>
+            <span class="badge text-bg-success rounded-pill">{{ contractor.contracts.count }}</span></div></div>
 {% endfor %}
+
+
+
+
 <p>{% include 'pagination.html' %}</p>
 {% endblock %}

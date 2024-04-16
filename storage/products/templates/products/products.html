@@ -3,14 +3,13 @@
 
 {% block content %}
 <p>{% include 'pagination.html' %}</p>
+
 {% for product in products %}
-    <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{% url 'products:product' product.pk %}">{{ product }}</a>
-            <span class="badge text-bg-primary rounded-pill">{{ product.specifications.count }}</span>
-        </li>
-    </ul>
+    <div class="card">
+    <div class="card-text"><a class="btn stretched-link" href="{% url 'products:product' product.pk %}">{{ product }}</a>
+    <span class="badge text-bg-success rounded-pill">{{ product.specifications.count }}</span></div></div>
 {% endfor %}
+
 <p>{% include 'pagination.html' %}</p>
 {% endblock %}
 

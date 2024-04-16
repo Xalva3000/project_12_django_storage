@@ -1,5 +1,6 @@
-from copy import deepcopy
+from django.shortcuts import get_object_or_404
 
+from contracts.models import Contract, Action
 
 menu = [{'title': "Продукты", 'url_name': 'products:products'},
         {'title': "Контрагенты", 'url_name': 'contractors:contractors'},
@@ -67,3 +68,24 @@ def contract_re_map(contract):
 
 def contract_rpe_map(contract):
 	return ''.join(map(lambda b: str(int(b)), [contract.reserved, contract.executed, contract.paid]))
+
+
+def insert_action_notification(contract: int | Contract, action: str):
+	if isinstance(contract, int):
+		contract = get_object_or_404(Contract, pk=contract)
+	dct = {
+		'created': f'Новый контракт {contract} зарегистрирован.',
+		'deleted': f'Контракт {contract} удален.',
+		'recovered': f'Контракт {contract} восстановлен.',
+		'reserved': f'Продукция по контракту {contract} зарезервирована.',
+		'unreserved': f'Продукция по контракту {contract} снова доступна к продаже.',
+		'payment': f'принята оплата по контракту {contract}.',
+		'paid': f'Контракт {contract} отмечен как оплаченный.',
+		'returned payment': f'Контракт {contract} отмечен как неоплаченный.',
+		'executed': f'Совершена отгрузка по контракту {contract}.',
+		'returned': f'Возврат товара по контракту {contract}.',
+		'changed': f'Изменение спецификации контракта {contract}.',
+	}
+	if action in dct:
+		message = dct.get(action, 'message_error')
+		Action.objects.create(contract=contract, action=message)

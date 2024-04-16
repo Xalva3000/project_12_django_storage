@@ -81,3 +81,14 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.contract.pk} {self.date_payment} {self.amount}руб."
+
+
+class Action(models.Model):
+    contract = models.ForeignKey(
+        'contracts.Contract',
+        on_delete=models.PROTECT, null=True,
+        related_name='actions',
+        verbose_name='Действия')
+
+    action = models.TextField(max_length=100)
+    date_action = models.DateField(auto_now_add=True, null=False)

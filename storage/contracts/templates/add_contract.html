@@ -1,37 +1,7 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
-<form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-error">{{ form.non_field_errors }}</div>
-
-    {% for field in form %}
-
-        {% if field.label == 'Contractor' %}
-            <input type="hidden" name="contractor" id="contractor" value="">
-            <p><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-            <input type="text" list="{{ field.id_for_label }}" id="contractor_input" placeholder="Type" class="form-control" autocomplete="on">
-            <datalist id="{{ field.id_for_label }}">
-                {% for f in field.field.queryset %}
-                    <option value="{{ f.pk }}">{{ f.name }}</option>
-                {% endfor %}
-            </datalist>
-            </p>
-        {% else %}
-
-            <p><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}</p>
-            <div class="form-error">{{ field.errors }}</div>
-        {% endif %}
-    {% endfor %}
-
-    <p><button type="submit">Создать</button></p>
-</form>
-
-<script>
-document.querySelector("#contractor_input").addEventListener("change", function() {
-    document.querySelector("#contractor").value = this.value;
-});
-</script>
+{% crispy form %}
 
 {% endblock %}

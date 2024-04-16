@@ -1,3 +1,5 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django.forms import models, inlineformset_factory
 from django import forms
 
@@ -5,7 +7,14 @@ from .models import Contract, Specification
 
 
 class AddContractForm(models.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.helper = FormHelper(self)
+		self.helper.add_input(Submit('внести', 'Внести', css_class="btn btn-success"))
+
+	contract_type = forms.ChoiceField(choices=Contract.ContractType.choices)
 	date_plan = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), )
+	note = forms.Textarea()
 
 	class Meta:
 		model = Contract

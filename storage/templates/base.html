@@ -32,8 +32,8 @@
             {% endfor %}
             </ul>
 
-            
           </div>
+
           <div style="display: flex; justify-content: flex-end;">
             {% if user.is_authenticated %}
             <nav class="navbar bg-body-tertiary">
@@ -53,6 +53,7 @@
             </nav>
             {% endif %}
             </div>
+
         </div>
         
       </nav>
@@ -63,13 +64,13 @@
 <div class="main-container">
 
     <div class="left-bar">
-      
+      <div class="card">
         {% for i in tools %}
-        <div class="card">
-        <a type="button" class="btn btn-outline-dark" href="{% url i.path %}">{{i.title}}</a>
-      </div>
-        {% endfor %}
         
+            <a type="button" class="btn btn-outline-dark m-1" href="{% url i.path %}">{{i.title}}</a>
+        
+        {% endfor %}
+      </div>
     </div>
 
 
@@ -81,15 +82,17 @@
     </div>
 
     <div class="right-bar">
-      {% for i in tools %}
       <div class="card">
-      <a type="button" class="btn btn-outline-dark" href="{% url i.path %}">{{i.title}}</a>
-    </div>
+      {% for i in tools %}
+      
+        <a type="button" class="btn btn-outline-dark m-1" href="{% url i.path %}">{{i.title}}</a>
+      
       {% endfor %}
+    </div>
     </div>
 
 </div>
-<!--  -->
+
 <script src="{% static 'products/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

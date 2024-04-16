@@ -81,16 +81,6 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
         payments = qs.aggregate(p=Sum(F('total_payments')))
         result['payments'] = payments['p']
 
-        # weight = [c.specifications.aggregate(weight=Sum(F('quantity') * F('variable_weight'))) for c in qs if c.specifications.all()]
-        # result['weight'] = sum([dct['weight'] for dct in weight])
-        #
-        # cost = [c.specifications.aggregate(cost=Sum(F('quantity') * F('variable_weight') * F('price'))) for c in qs if c.specifications.all()]
-        # result['cost'] = sum([dct['cost'] for dct in cost])
-        # payments = [c.payments.aggregate(payment=Sum('amount')) for c in qs]
-        # if payments:
-        #     result['payments'] = sum([dct['payment'] for dct in payments if dct['payment']])
-
-
         bonuses_qs = qs.values('id', 'manager__username', 'manager_share')
         lst = []
         bonuses = {}
