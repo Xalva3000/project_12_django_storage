@@ -83,13 +83,13 @@
 
     <div class="right-bar">
       <div class="card">
-        
+        {% if user.is_authenticated %}
         {% for u in last_updates %}
         <div class="card-text">
           <p>{{ u }}</p>
         </div>
         {% endfor %}
-      
+        {% endif %}
       </div>
     </div>
 

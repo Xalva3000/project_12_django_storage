@@ -58,10 +58,6 @@ class DataMixin:
 		else:
 			return '?'
 
-#
-# def contract_rpe_map(contract):
-# 	return ''.join(map(lambda b: str(int(b)), [contract.reserved, contract.paid, contract.executed]))
-
 
 def contract_re_map(contract):
 	return ''.join(map(lambda b: str(int(b)), [contract.reserved, contract.executed]))
