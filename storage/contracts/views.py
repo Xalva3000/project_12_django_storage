@@ -1,17 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.db.models import Sum, F, Q
 from django.forms import inlineformset_factory
-from django.http import HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from sql_util.aggregates import SubquerySum
 
-from .forms import AddContractForm, AddSpecificationForm, SpecificationFormSet
+from .forms import AddContractForm
 from .models import Contract, Specification, Payment
-from products.utils import DataMixin, tools, menu
+from products.utils import DataMixin, tools, menu, insert_action_notification
 from .filters import ContractFilter
 
 
@@ -127,12 +125,15 @@ class AddContract(LoginRequiredMixin, DataMixin, CreateView):
     category_page = 'contracts'
 
     def get_success_url(self):
+        insert_action_notification(contract=self.object.id, action='created', extra_info=self.request.user)
         return reverse("contracts:contract", args=[self.object.id,])
 
     def form_valid(self, form):
         contract = form.save(commit=False)
         contract.manager = self.request.user
         return super().form_valid(form)
+
+
 
 # def add_contract(request):
 #     if request.method == 'POST':
@@ -186,6 +187,7 @@ class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
 
 @login_required
 def add_specifications(request, pk):
+    # формирование группы форм
     spec_amount = int(request.POST.get('spec_amount', 3))
     contract = get_object_or_404(Contract, pk=pk)
     if contract.contract_type == Contract.ContractType.INCOME:
@@ -198,10 +200,13 @@ def add_specifications(request, pk):
         fields=fields,
         extra=spec_amount)
     formset = SpecificationFormSet(instance=contract)
+
+    # сохранение данных группы форм
     if request.method == 'POST' and 'spec_amount' not in request.POST.keys():
         formset = SpecificationFormSet(request.POST, instance=contract)
         if formset.is_valid():
             formset.save()
+            insert_action_notification(contract=contract, action='new_change')  # сообщение об изменении
             uri = reverse('contracts:contract', kwargs={'pk': pk})
             return redirect(uri)
     context = {'formset': formset, 'contract': contract, 'tools': tools['contracts'], 'menu': menu}
@@ -237,9 +242,11 @@ def change_note(request, pk):
     return redirect(uri)
 
 def add_payment(request, pk):
-    new_payment = int(request.POST.get('new_payment', 0))
-    payment = Payment.objects.create(contract_id=pk, amount=new_payment)
+    action = 'new_payment'
+    amount = int(request.POST.get(action, 0))
+    payment = Payment.objects.create(contract_id=pk, amount=amount)
     payment.save()
+    insert_action_notification(contract=pk, action=action, extra_info=amount)
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 

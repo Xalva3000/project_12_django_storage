@@ -70,22 +70,23 @@ def contract_rpe_map(contract):
 	return ''.join(map(lambda b: str(int(b)), [contract.reserved, contract.executed, contract.paid]))
 
 
-def insert_action_notification(contract: int | Contract, action: str):
+def insert_action_notification(contract: int | Contract, action: str, extra_info=None):
 	if isinstance(contract, int):
 		contract = get_object_or_404(Contract, pk=contract)
 	dct = {
-		'created': f'Новый контракт {contract} зарегистрирован.',
-		'deleted': f'Контракт {contract} удален.',
-		'recovered': f'Контракт {contract} восстановлен.',
-		'reserved': f'Продукция по контракту {contract} зарезервирована.',
-		'unreserved': f'Продукция по контракту {contract} снова доступна к продаже.',
-		'payment': f'принята оплата по контракту {contract}.',
-		'paid': f'Контракт {contract} отмечен как оплаченный.',
-		'returned payment': f'Контракт {contract} отмечен как неоплаченный.',
-		'executed': f'Совершена отгрузка по контракту {contract}.',
-		'returned': f'Возврат товара по контракту {contract}.',
-		'changed': f'Изменение спецификации контракта {contract}.',
+		'created': f'Создан {contract.pk}-{contract.contractor.name} // {extra_info}.',
+		'deleted': f'Удален {contract.pk}-{contract.contractor.name}.',
+		'undeleted': f'Восстановлен {contract.pk}-{contract.contractor.name}.',
+		'reserved': f'Бронь {contract.pk}-{contract.contractor.name}.',
+		'unreserved': f'Снята бронь {contract.pk}-{contract.contractor.name}.',
+		'paid': f'Оплачен {contract.pk}-{contract.contractor.name}.',
+		'unpaid': f'Неоплачен {contract.pk}-{contract.contractor.name}.',
+		'executed': f'Отгрузка {contract.pk}-{contract.contractor.name}.',
+		'unexecuted': f'Возврат {contract.pk}-{contract.contractor.name}.',
+		'new_payment': f'Платеж {contract.pk}-{contract.contractor.name}.',
+		'new_change': f'Изменение {contract.pk}-{contract.contractor.name}.',
 	}
 	if action in dct:
 		message = dct.get(action, 'message_error')
-		Action.objects.create(contract=contract, action=message)
+		new_action = Action.objects.create(contract=contract, action=message)
+		new_action.save()

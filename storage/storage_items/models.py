@@ -24,7 +24,7 @@ class StorageItem(models.Model):
     objects = models.Manager()
 
     class Meta:
-        unique_together = [("product", "price")]
+        unique_together = [("product", "price", "weight")]
 
     def __str__(self):
         return f"{self.product} {self.price}руб: {self.available}(available), {self.stored}(stored)"

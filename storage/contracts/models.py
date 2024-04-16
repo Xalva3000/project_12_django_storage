@@ -31,7 +31,8 @@ class Contract(models.Model):
                                 related_name='contracts', null=True, default=None)
 
     def __str__(self):
-        return f"{self.pk} {self.contract_type} {self.contractor.name} {self.reserved} {self.executed} {self.paid}"
+        return f"{self.pk} {self.contract_type} {self.contractor.name} " \
+               f"({'1' if self.reserved else '0'}|{'1' if self.executed else '0'}|{'1' if self.paid else '0'})"
 
 
 class Specification(models.Model):
@@ -92,3 +93,6 @@ class Action(models.Model):
 
     action = models.TextField(max_length=100)
     date_action = models.DateField(auto_now_add=True, null=False)
+
+    def __str__(self):
+        return f"{self.date_action}--{self.action}"

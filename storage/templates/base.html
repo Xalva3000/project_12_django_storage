@@ -83,12 +83,14 @@
 
     <div class="right-bar">
       <div class="card">
-      {% for i in tools %}
+        
+        {% for u in last_updates %}
+        <div class="card-text">
+          <p>{{ u }}</p>
+        </div>
+        {% endfor %}
       
-        <a type="button" class="btn btn-outline-dark m-1" href="{% url i.path %}">{{i.title}}</a>
-      
-      {% endfor %}
-    </div>
+      </div>
     </div>
 
 </div>

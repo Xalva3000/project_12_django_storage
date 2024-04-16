@@ -1,10 +1,9 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from products.utils import contract_re_map
+from products.utils import contract_re_map, insert_action_notification
 
 from contracts.models import Contract
 from storage_items.models import StorageItem
@@ -73,21 +72,30 @@ def switch_reserve_by_contract_id(request, pk):
     contract = get_object_or_404(Contract, pk=pk)
     re = contract_re_map(contract)
     specifications = contract.specifications.all()
+    operation = False
+    stage = 'reserve'
     if specifications.count() > 0:
         if contract.contract_type == Contract.ContractType.INCOME:
             if re == '00':
-                switch_income_reserve_stage(contract=contract, operation='apply')
+                operation = 'apply'
+                switch_income_reserve_stage(contract=contract, operation=operation)
             elif re == '10':
-                switch_income_reserve_stage(contract=contract, operation='cancel')
+                operation = 'cancel'
+                switch_income_reserve_stage(contract=contract, operation=operation)
         else:
             if re == '10':
-                switch_outcome_stage(contract=contract, stage='reserve', operation='cancel')
+                operation = 'cancel'
+                switch_outcome_stage(contract=contract, stage=stage, operation=operation)
                 contract.reserved = False
 
             elif re == '00':
-                switch_outcome_stage(contract=contract, stage='reserve', operation='apply')
+                operation = 'apply'
+                switch_outcome_stage(contract=contract, stage=stage, operation=operation)
                 contract.reserved = True
 
+    if operation:
+        action = 'reserved' if operation == 'apply' else 'unreserved'
+        insert_action_notification(contract=contract, action=action)
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
@@ -96,8 +104,10 @@ def switch_reserve_by_contract_id(request, pk):
 def switch_payment_by_contract_id(request, pk):
     contract = get_object_or_404(Contract, pk=pk)
     if contract.specifications.all():
+        action = 'unpaid' if contract.paid else 'paid'
         contract.paid = not contract.paid
         contract.save()
+        insert_action_notification(contract=contract, action=action)
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
@@ -107,22 +117,31 @@ def switch_execution_by_contract_id(request, pk):
     contract = get_object_or_404(Contract, pk=pk)
     specifications = contract.specifications.all()
     re = contract_re_map(contract)
+    operation = False
+    stage = 'execution'
     if specifications and re in ('10', '11'):
 
         if contract.contract_type == Contract.ContractType.INCOME:
             if re == '10':
-                switch_income_execution_stage(contract=contract, operation='apply')
+                operation = 'apply'
+                switch_income_execution_stage(contract=contract, operation=operation)
             elif re == '11':
-                switch_income_execution_stage(contract=contract, operation='cancel')
+                operation = 'cancel'
+                switch_income_execution_stage(contract=contract, operation=operation)
         if contract.contract_type == Contract.ContractType.OUTCOME:
             if re == '10':
-                switch_outcome_stage(contract=contract, stage='execution', operation='apply')
+                operation = 'apply'
+                switch_outcome_stage(contract=contract, stage=stage, operation=operation)
                 # contract.date_plan = datetime.date.today()
                 contract.date_execution = datetime.date.today()
             elif re == '11':
-                switch_outcome_stage(contract=contract, stage='execution', operation='cancel')
+                operation = 'cancel'
+                switch_outcome_stage(contract=contract, stage=stage, operation=operation)
                 contract.date_execution = None
 
+    if operation:
+        action = 'executed' if operation == 'apply' else 'unexecuted'
+        insert_action_notification(contract=contract, action=action)
         contract.executed = not contract.executed
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
@@ -132,11 +151,16 @@ def switch_execution_by_contract_id(request, pk):
 def delete_contract(request, pk):
     contract = Contract.objects.get(pk=pk)
     re = contract_re_map(contract)
+    action = False
     if re == '00' and not contract.date_delete:
+        action = 'deleted'
         contract.date_delete = datetime.date.today()
-        contract.save()
     elif re == '00' and contract.date_delete:
+        action = 'undeleted'
         contract.date_delete = None
+
+    if action:
+        insert_action_notification(contract=contract, action=action)
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
