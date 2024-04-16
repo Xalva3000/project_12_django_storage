@@ -86,7 +86,8 @@
         {% if user.is_authenticated %}
         {% for u in last_updates %}
         <div class="card-text">
-          <p>{{ u }}</p>
+          <p class="mb-0">{{ u.date_action }}</p>
+          <p>{{ u.action }}</p>
         </div>
         {% endfor %}
         {% endif %}

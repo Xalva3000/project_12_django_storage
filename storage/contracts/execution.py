@@ -2,10 +2,10 @@ import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from products.utils import contract_re_map, insert_action_notification
 
-from contracts.models import Contract
+from contracts.models import Contract, Payment
 from storage_items.models import StorageItem
 
 
@@ -67,6 +67,7 @@ def switch_outcome_stage(contract, *, stage: str = 'reserve', operation: str = '
             specification.storage_item.stored = demand[(stage, operation)](specification)
         specification.storage_item.save()
 
+
 @login_required
 def switch_reserve_by_contract_id(request, pk):
     contract = get_object_or_404(Contract, pk=pk)
@@ -99,6 +100,7 @@ def switch_reserve_by_contract_id(request, pk):
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
+
 
 @login_required
 def switch_payment_by_contract_id(request, pk):
@@ -147,6 +149,7 @@ def switch_execution_by_contract_id(request, pk):
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
+
 @login_required
 def delete_contract(request, pk):
     contract = Contract.objects.get(pk=pk)
@@ -164,3 +167,40 @@ def delete_contract(request, pk):
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
+
+
+def change_manager_share(request, pk):
+    new_share = int(request.POST.get('new_share', 0))
+    contract = Contract.objects.get(pk=pk)
+    contract.manager_share = new_share
+    contract.save()
+    uri = reverse('contracts:contract', kwargs={'pk': pk})
+    return redirect(uri)
+
+
+def change_note(request, pk):
+    new_note = request.POST.get('new_note', '')
+    contract = Contract.objects.get(pk=pk)
+    contract.note = new_note
+    contract.save()
+    uri = reverse('contracts:contract', kwargs={'pk': pk})
+    return redirect(uri)
+
+
+def add_payment(request, pk):
+    action = 'new_payment'
+    amount = int(request.POST.get(action, 0))
+    payment = Payment.objects.create(contract_id=pk, amount=amount)
+    payment.save()
+    insert_action_notification(contract=pk, action=action, extra_info=amount)
+    uri = reverse('contracts:contract', kwargs={'pk': pk})
+    return redirect(uri)
+
+
+# def delete_payment(request, pk):
+#     new_share = int(request.POST.get('new_share', 0))
+#     contract = Contract.objects.get(pk=pk)
+#     contract.
+#     contract.save()
+#     uri = reverse('contracts:contract', kwargs={'pk': pk})
+#     return redirect(uri)

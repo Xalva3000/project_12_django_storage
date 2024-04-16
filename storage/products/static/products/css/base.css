@@ -22,14 +22,10 @@ h1 {
     max-width: 300px;
 }
 
-/* .left-bar p,
-.right-bar p {
-    margin: 1em;
-    padding: 1em;
-    padding-bottom: 1em;
-    border-style: solid;
-    border-width: 0.5px;
-} */
+a.page-link,
+a.page-link:hover {
+    color: #329215;
+}
 
 .pagination-upper {
     text-align: center;
@@ -41,24 +37,13 @@ h1 {
     margin: 3px;
     padding: 3px;
 }
-/* 
-.card>.executed {
-    display: inline;
-    background-color: rgb(163, 216, 170);
-}
-
-.card>.paid {
-    display: inline;
-    background-color: rgb(223, 217, 163);
-}
-
-.card>.reserved {
-    display: inline;
-    background-color: rgb(216, 175, 163);
-} */
 
 
-@media (max-width: 630px) {
+@media only screen and (max-width: 768px) {
+    html, body {
+        font-size: 30px;
+    }
+
     .main-container {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4);
@@ -72,5 +57,6 @@ h1 {
     }
     .right-bar {
         grid-column: 1;
+        max-width: 100%;
     }
 }

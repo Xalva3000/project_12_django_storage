@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum, F, Q
+from django.db.models import Sum, F
 from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from sql_util.aggregates import SubquerySum
 
@@ -13,7 +13,7 @@ from products.utils import DataMixin, tools, menu, insert_action_notification
 from .filters import ContractFilter
 
 
-# Create your views here.
+
 def index(request):
     return render(request, 'base.html', {'title': 'Contracts'})
 
@@ -26,7 +26,6 @@ class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):
     category_page = "contracts"
     paginate_by = 10
     queryset = Contract.objects.filter(date_delete__isnull=True).order_by('-date_plan', '-pk')
-    # allow_empty =
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -64,6 +63,7 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filterset.form
+        context['query_length'] = self.get_queryset().count()
         context['income_stats'] = self.get_stats(self.get_queryset(), Contract.ContractType.INCOME)
         context['outcome_stats'] = self.get_stats(self.get_queryset(), Contract.ContractType.OUTCOME)
         return context
@@ -132,24 +132,6 @@ class AddContract(LoginRequiredMixin, DataMixin, CreateView):
         contract = form.save(commit=False)
         contract.manager = self.request.user
         return super().form_valid(form)
-
-
-
-# def add_contract(request):
-#     if request.method == 'POST':
-#         print(request.POST)
-#         form = AddContractForm(request.POST)
-#         # print(form)
-#         # print(request.POST.get('contractor'))
-#         # if form.is_valid():
-#         #     print(request.POST)
-#         return HttpResponseRedirect(reverse('contracts:contracts'))
-#     else:
-#         form = AddContractForm()
-#     return render(request, 'add_contract.html', {'form': form,
-#                                                  # 'category_page': 'contracts',
-#                                                  'title_page': 'Добавление контракта',
-#                                                  'tools': tools['contracts']})
 
 class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
     model = Contract
@@ -224,36 +206,3 @@ class UpdateContract(LoginRequiredMixin, DataMixin, UpdateView):
     def get_success_url(self):
         pk = self.kwargs["pk"]
         return reverse('contracts:contract', kwargs={"pk": pk})
-
-def change_manager_share(request, pk):
-    new_share = int(request.POST.get('new_share', 0))
-    contract = Contract.objects.get(pk=pk)
-    contract.manager_share = new_share
-    contract.save()
-    uri = reverse('contracts:contract', kwargs={'pk': pk})
-    return redirect(uri)
-
-def change_note(request, pk):
-    new_note = request.POST.get('new_note', '')
-    contract = Contract.objects.get(pk=pk)
-    contract.note = new_note
-    contract.save()
-    uri = reverse('contracts:contract', kwargs={'pk': pk})
-    return redirect(uri)
-
-def add_payment(request, pk):
-    action = 'new_payment'
-    amount = int(request.POST.get(action, 0))
-    payment = Payment.objects.create(contract_id=pk, amount=amount)
-    payment.save()
-    insert_action_notification(contract=pk, action=action, extra_info=amount)
-    uri = reverse('contracts:contract', kwargs={'pk': pk})
-    return redirect(uri)
-
-# def delete_payment(request, pk):
-#     new_share = int(request.POST.get('new_share', 0))
-#     contract = Contract.objects.get(pk=pk)
-#     contract.
-#     contract.save()
-#     uri = reverse('contracts:contract', kwargs={'pk': pk})
-#     return redirect(uri)
