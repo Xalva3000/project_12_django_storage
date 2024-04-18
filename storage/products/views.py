@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpRequest
@@ -17,7 +16,6 @@ def index(request):
 class ProductsList(DataMixin, ListView):
     template_name = 'products/products.html'
     context_object_name = 'products'
-    # allow_empty = False
     title_page = 'Продукты'
     category_page = 'products'
     paginate_by = 20
@@ -33,14 +31,10 @@ class AddProduct(LoginRequiredMixin, DataMixin, CreateView):
     category_page = 'products'
     success_url = reverse_lazy('products:products')
 
-    # def get_success_url(self):
-    #     pk = self.kwargs["pk"]
-    #     return reverse('products:product', kwargs={"pk": pk})
 
 class UpdateProduct(LoginRequiredMixin, DataMixin, UpdateView):
     model = Product
     form_class = AddProductForm
-    # fields = ['fish', 'cutting', 'size', 'producer', 'package',]
     template_name = 'products/add_product.html'
     title_page = 'Редактирование продукта'
     category_page = 'products'

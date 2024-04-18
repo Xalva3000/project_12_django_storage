@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from datetime import date
 from pathlib import Path
 import environ
 
@@ -159,7 +160,8 @@ EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_PORT = env("EMAIL_PORT")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-EMAIL_USE_SSL = True
+# EMAIL_USE_SSL = True
+EMAIL_USE_TLS = True
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
@@ -168,3 +170,38 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 # AUTH_USER_MODEL = 'users.User' # вместо auth.User
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR) + r"\logs\\" + env("DJANGO_LOG_FILE") + f"{date.today()}.log",
+            "level": env("DJANGO_LOG_LEVEL"),
+            "formatter": "verbose",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": env("DJANGO_LOG_LEVEL"),
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "": {
+            "level": env("DJANGO_LOG_LEVEL"),
+            "handlers": ["file", "console"],
+            "propagate": False,
+        },
+    },
+    "formatters": {
+        "simple": {
+            "format": "{asctime}:{levelname} {message}",
+            "style":  "{",
+        },
+        "verbose": {
+            "format": "{asctime}:{levelname} = {name} {module}.py (line {lineno:d}). {message}",
+            "style": "{",
+        }
+    }
+}

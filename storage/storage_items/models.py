@@ -27,4 +27,4 @@ class StorageItem(models.Model):
         unique_together = [("product", "price", "weight")]
 
     def __str__(self):
-        return f"{self.product} {self.price}руб: {self.available}(available), {self.stored}(stored)"
+        return f"{self.product} {self.weight}кг {self.price}руб: {self.available}/{self.stored}"
