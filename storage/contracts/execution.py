@@ -4,7 +4,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from products.utils import contract_re_map, insert_action_notification
+from products.utils import contract_re_map, insert_action_notification, ceo_notification
 
 from contracts.models import Contract, Payment
 from storage_items.models import StorageItem
@@ -22,13 +22,15 @@ def switch_income_reserve_stage(contract, *, operation: str = 'apply'):
         'cancel': {'available': lambda s_i, num: s_i.available - num,}
     }
     specifications = contract.specifications.all()
+    count = 1
     for specification in specifications:
-        storage_item = StorageItem.objects.get_or_create(product=specification.product,
+        storage_item, is_created = StorageItem.objects.get_or_create(product=specification.product,
                                                          weight=specification.variable_weight,
-                                                         price=specification.price)[0]
+                                                         price=specification.price)
         storage_item.available = demand[operation]['available'](storage_item, specification.quantity)
         storage_item.save()
     contract.reserved = operation == 'apply'
+    return
 
 
 def switch_income_execution_stage(contract, *, operation: str = 'apply'):
@@ -71,6 +73,7 @@ def switch_outcome_stage(contract, *, stage: str = 'reserve', operation: str = '
 @login_required
 def switch_reserve_by_contract_id(request, pk):
     logger.info(f"switched reserve status of contract {pk}")
+    ceo_notification({'pk': pk})
     contract = get_object_or_404(Contract, pk=pk)
     re = contract_re_map(contract)
     specifications = contract.specifications.all()

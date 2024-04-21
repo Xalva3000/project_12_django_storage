@@ -20,7 +20,7 @@ def index(request):
 
 class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
-    template_name = "contracts_plus.html"
+    template_name = "contracts/contracts_plus.html"
     context_object_name = "contracts"
     title_page = "Контракты"
     category_page = "contracts"
@@ -40,7 +40,7 @@ class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):
 
 class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
-    template_name = "contracts_minimal.html"
+    template_name = "contracts/contracts_minimal.html"
     context_object_name = "contracts"
     title_page = "Контракты"
     category_page = "contracts"
@@ -100,7 +100,7 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
 
 class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
-    template_name = "contracts_minimal.html"
+    template_name = "contracts/contracts_minimal.html"
     context_object_name = "contracts"
     title_page = "Контракты"
     category_page = "contracts"
@@ -120,7 +120,7 @@ class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
 
 class AddContract(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddContractForm
-    template_name = 'add_contract.html'
+    template_name = 'contracts/add_contract.html'
     title_page = 'Добавление контракта'
     category_page = 'contracts'
 
@@ -135,7 +135,7 @@ class AddContract(LoginRequiredMixin, DataMixin, CreateView):
 
 class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
     model = Contract
-    template_name = 'contract.html'
+    template_name = 'contracts/contract.html'
     context_object_name = 'contract'
     pk_url_kwarg = 'pk'
     title_page = 'Детали контракта'
@@ -192,14 +192,14 @@ def add_specifications(request, pk):
             uri = reverse('contracts:contract', kwargs={'pk': pk})
             return redirect(uri)
     context = {'formset': formset, 'contract': contract, 'tools': tools['contracts'], 'menu': menu}
-    return render(request, 'add_specifications.html', context)
+    return render(request, 'contracts/add_specifications.html', context)
 
 
 class UpdateContract(LoginRequiredMixin, DataMixin, UpdateView):
     model = Contract
     form_class = AddContractForm
     # fields = ['contract_type', 'date_plan','contractor', 'note',]
-    template_name = 'add_contract.html'
+    template_name = 'contracts/add_contract.html'
     title_page = 'Редактирование контракта'
     category_page = 'contracts'
 

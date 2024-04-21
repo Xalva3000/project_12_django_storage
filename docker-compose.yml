@@ -1,0 +1,47 @@
+services:
+  web-server:
+    image: nginx:stable
+    container_name: mynginx
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+  
+  
+  web-app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+    networks:
+      - appnet
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    command: redis-server
+    restart: always
+    networks:
+      - appnet
+    depends_on:
+      - web-app
+
+  celery:
+    build:
+      context: .
+    command: celery -A storage.notification:app worker --loglevel=info
+    restart: unless-stopped
+    networks:
+      - appnet
+    depends_on:
+      - web-app
+      - redis
+
+networks:
+  appnet:
+    driver: bridge
+    name: appnet
+

@@ -28,9 +28,9 @@ environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["127.0.0.1", "maasanzf.beget.tech", "www.maasanzf.beget.tech"]
+ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 INTERNAL_IPS = ["127.0.0.1"]
 
 # Application definition
@@ -53,11 +53,13 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'crispy_forms',
     "crispy_bootstrap4",
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -138,6 +140,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static/"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -153,6 +157,8 @@ AUTHENTICATION_BACKENDS = [
     'users.authentication.EmailAuthBackend',
 ]
 
+
+# email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
@@ -171,13 +177,18 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+
+# logging
+PATH_TO_LOGS_NT = str(BASE_DIR) + r"\logs\\" + env("DJANGO_LOG_FILE") + f"{date.today()}.log"
+PATH_TO_LOG_UBUNTU = str(BASE_DIR) + "/logs/" + env("DJANGO_LOG_FILE") + f"{date.today()}.log"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": str(BASE_DIR) + r"\logs\\" + env("DJANGO_LOG_FILE") + f"{date.today()}.log",
+            "filename": PATH_TO_LOGS_NT if os.name == 'nt' else PATH_TO_LOG_UBUNTU,
             "level": env("DJANGO_LOG_LEVEL"),
             "formatter": "verbose",
         },
@@ -205,3 +216,13 @@ LOGGING = {
         }
     }
 }
+# "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+# REDIS settings
+REDIS_HOST = "0.0.0.0"
+REDIS_PORT = "6379"
+CELERY_BROKER_URL = "redis://127.0.0.1:6379" if os.name == 'nt' else "redis://redis:6379/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379" if os.name == 'nt' else "redis://redis:6379/0"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'contracts/filter_form_drop.html' %}
+    <div class="container-info">Кол-во контрактов соответствующих фильтру {{ contracts|length }}</div>
+    
+    <div class="container-content">
+      <!--  -->
+      <div class="pagination-upper">
+<p>{% include 'pagination.html' %}</p>
+      </div>
+      <!--  -->
+        {% for contract in contracts %}
+          <div class="
+          {% if contract.reserved and contract.executed and contract.paid %}
+          card p-1 mb-1 bg-success-subtle text-dark
+          {% elif contract.reserved and contract.executed and not contract.paid %}
+          card p-1 mb-1 bg-danger-subtle text-danger-emphasis
+          {% elif contract.reserved and not contract.executed and contract.paid %}
+          card p-1 mb-1 bg-primary-subtle text-primary-emphasis
+          {% elif contract.reserved and not contract.executed and not contract.paid %}
+          card p-1 mb-1 bg-warning-subtle text-warning-emphasis
+          {% else %}
+          card p-1 mb-1 bg-secondary-subtle text-secondary-emphasis
+          {% endif %}">
+          <div class="card-header"><a href="{% url 'contracts:contract' contract.pk %}">#{{ contract.pk }}--
+            {{ contract.date_plan|date:"d M Y" }}--{{ contract.contract_type }} {{ contract.contractor.name }} 
+            {{ contract.reserved|yesno:"1,0" }}|{{ contract.executed|yesno:"1,0" }}|{{ contract.paid|yesno:"1,0" }}</a>
+          </div>
+          <div class="card-body">
+              <ol>
+              {% for spec in contract.specifications.all %}
+                <li class="card-text">{{ spec }}</li>
+              {% endfor %}
+              </ol>
+            </div>
+          </div>
+        {% endfor %}
+      <!--  -->
+      <div class="pagination-lower">
+<p>{% include 'pagination.html' %}</p>
+      </div>
+    </div>
+{% endblock %}
+
