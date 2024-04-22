@@ -151,7 +151,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = 'products:products'
 LOGOUT_REDIRECT_URL = 'users:login'
 LOGIN_URL = 'users:login'
-
+PERMISSION_CODE = env('PERMISSION')
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.EmailAuthBackend',
@@ -162,12 +162,14 @@ AUTHENTICATION_BACKENDS = [
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_PORT = env("EMAIL_PORT_SSL") if EMAIL_USE_SSL else env("EMAIL_PORT_TLS")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-# EMAIL_USE_SSL = True
-EMAIL_USE_TLS = True
+
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER

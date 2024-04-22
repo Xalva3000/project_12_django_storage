@@ -72,7 +72,7 @@ def switch_outcome_stage(contract, *, stage: str = 'reserve', operation: str = '
 
 @login_required
 def switch_reserve_by_contract_id(request, pk):
-    logger.info(f"switched reserve status of contract {pk}")
+    logger.info(f"Attempt to switch a reserve status of contract {pk}.")
     ceo_notification({'pk': pk})
     contract = get_object_or_404(Contract, pk=pk)
     re = contract_re_map(contract)
@@ -103,6 +103,7 @@ def switch_reserve_by_contract_id(request, pk):
         insert_action_notification(contract=contract, action=action)
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Reserve status of contract {pk} switched.")
     return redirect(uri)
 
 
@@ -115,11 +116,13 @@ def switch_payment_by_contract_id(request, pk):
         contract.save()
         insert_action_notification(contract=contract, action=action)
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Payment status of contract {pk} switched.")
     return redirect(uri)
 
 
 @login_required
 def switch_execution_by_contract_id(request, pk):
+    logger.info(f"Attempt to switch execution status of contract {pk}.")
     contract = get_object_or_404(Contract, pk=pk)
     specifications = contract.specifications.all()
     re = contract_re_map(contract)
@@ -151,6 +154,7 @@ def switch_execution_by_contract_id(request, pk):
         contract.executed = not contract.executed
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Execution status of contract {pk} switched.")
     return redirect(uri)
 
 
@@ -170,6 +174,7 @@ def delete_contract(request, pk):
         insert_action_notification(contract=contract, action=action)
         contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Contract {pk} deleted.")
     return redirect(uri)
 
 
@@ -179,6 +184,7 @@ def change_manager_share(request, pk):
     contract.manager_share = new_share
     contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Manager share of Contract {pk} changed.")
     return redirect(uri)
 
 
@@ -188,6 +194,7 @@ def change_note(request, pk):
     contract.note = new_note
     contract.save()
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Note of Contract {pk} changed.")
     return redirect(uri)
 
 
@@ -198,6 +205,7 @@ def add_payment(request, pk):
     payment.save()
     insert_action_notification(contract=pk, action=action, extra_info=amount)
     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    logger.info(f"Payment has been accepted for contract {pk}.")
     return redirect(uri)
 
 
