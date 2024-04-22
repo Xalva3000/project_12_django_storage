@@ -300,6 +300,16 @@ django = ">=3.2"
 sqlparse = "*"
 
 [[package]]
+name = "environ"
+version = "1.0"
+description = "Stack Based Globals Management"
+optional = false
+python-versions = "*"
+files = [
+    {file = "environ-1.0.tar.gz", hash = "sha256:4df7f1dfeb7d1c988d2e19a8bd5d547a526e0400aeb35adf732032472f35dcb0"},
+]
+
+[[package]]
 name = "flower"
 version = "2.0.1"
 description = "Celery Flower"
@@ -781,4 +791,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "86162925536b38926af716bef499069e983da38c5db1b9524ffcd6dfd9bfea28"
+content-hash = "e8742eabb6a898353e0a1700b6377435eaaf21601684b0dcef57f1eba2166b29"

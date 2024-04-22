@@ -26,10 +26,12 @@ django-extensions==3.2.3
 django-filter==24.1
 django-sql-utils==0.7.0
 dulwich==0.21.7
+environ==1.0
 executing==2.0.1
 fastjsonschema==2.19.1
 filelock==3.13.1
 flower==2.0.1
+gunicorn==22.0.0
 humanize==4.9.0
 idna==3.6
 importlib-metadata==7.0.1
@@ -46,7 +48,7 @@ more-itertools==10.2.0
 msgpack==1.0.7
 mypy==1.8.0
 mypy-extensions==1.0.0
-packaging==23.2
+packaging==24.0
 parso==0.8.3
 pexpect==4.9.0
 pkginfo==1.9.6
