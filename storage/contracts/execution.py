@@ -102,8 +102,8 @@ def switch_reserve_by_contract_id(request, pk):
         action = 'reserved' if operation == 'apply' else 'unreserved'
         insert_action_notification(contract=contract, action=action)
         contract.save()
+        logger.info(f"Reserve status of contract {pk} switched.")
     uri = reverse('contracts:contract', kwargs={'pk': pk})
-    logger.info(f"Reserve status of contract {pk} switched.")
     return redirect(uri)
 
 
@@ -115,8 +115,8 @@ def switch_payment_by_contract_id(request, pk):
         contract.paid = not contract.paid
         contract.save()
         insert_action_notification(contract=contract, action=action)
+        logger.info(f"Payment status of contract {pk} switched.")
     uri = reverse('contracts:contract', kwargs={'pk': pk})
-    logger.info(f"Payment status of contract {pk} switched.")
     return redirect(uri)
 
 
@@ -153,8 +153,8 @@ def switch_execution_by_contract_id(request, pk):
         insert_action_notification(contract=contract, action=action)
         contract.executed = not contract.executed
         contract.save()
+        logger.info(f"Execution status of contract {pk} switched.")
     uri = reverse('contracts:contract', kwargs={'pk': pk})
-    logger.info(f"Execution status of contract {pk} switched.")
     return redirect(uri)
 
 
@@ -173,8 +173,8 @@ def delete_contract(request, pk):
     if action:
         insert_action_notification(contract=contract, action=action)
         contract.save()
+        logger.info(f"Contract {pk} deleted.")
     uri = reverse('contracts:contract', kwargs={'pk': pk})
-    logger.info(f"Contract {pk} deleted.")
     return redirect(uri)
 
 
@@ -183,8 +183,8 @@ def change_manager_share(request, pk):
     contract = Contract.objects.get(pk=pk)
     contract.manager_share = new_share
     contract.save()
-    uri = reverse('contracts:contract', kwargs={'pk': pk})
     logger.info(f"Manager share of Contract {pk} changed.")
+    uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
 
@@ -193,8 +193,8 @@ def change_note(request, pk):
     contract = Contract.objects.get(pk=pk)
     contract.note = new_note
     contract.save()
-    uri = reverse('contracts:contract', kwargs={'pk': pk})
     logger.info(f"Note of Contract {pk} changed.")
+    uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
 
@@ -204,8 +204,8 @@ def add_payment(request, pk):
     payment = Payment.objects.create(contract_id=pk, amount=amount)
     payment.save()
     insert_action_notification(contract=pk, action=action, extra_info=amount)
-    uri = reverse('contracts:contract', kwargs={'pk': pk})
     logger.info(f"Payment has been accepted for contract {pk}.")
+    uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
 
