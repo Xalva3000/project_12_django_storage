@@ -43,3 +43,25 @@ document.querySelector("#contractor_input").addEventListener("change", function(
 </script>
 
 {% endblock %}
+
+  web-server:
+    image: nginx:stable
+    container_name: mynginx
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+
+  storage:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+    networks:
+      - appnet
+
+
+COPY ./entrypoint.sh /
+ENTRYPOINT ["sh", "/entrypoint.sh"]

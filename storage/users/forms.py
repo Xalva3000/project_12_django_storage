@@ -1,22 +1,32 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, AuthenticationForm
 from storage.settings import PERMISSION_CODE
 
 
-class LoginUserForm(forms.Form):
+class LoginUserForm(AuthenticationForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('войти', 'Войти', css_class="btn btn-success mt-3"))
+
     username = forms.CharField(label='Логин', widget=forms.TextInput())
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput())
 
 
 class RegisterUserForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('регистрация', 'Регистрация', css_class="btn btn-success mt-3"))
+
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
     permission_code = forms.CharField(label='Код разрешения', widget=forms.PasswordInput())
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     password2 = forms.CharField(label='Повтор пароля', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-
-
 
     class Meta:
         model = get_user_model()

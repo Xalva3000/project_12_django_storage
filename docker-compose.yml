@@ -1,20 +1,24 @@
 services:
-  web-server:
-    image: nginx:stable
-    container_name: mynginx
-    ports:
-      - 80:80
-      - 443:443
-    restart: unless-stopped
-  
-  
-  web-app:
+  django_gunicorn:
+    volumes:
+      - static:/static
+    env_file:
+      - storage/.env
     build:
       context: .
     ports:
-      - "8000:8000"
-    command: >
-      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+      - 8000:8000
+    networks:
+      - appnet
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static:/static
+    ports:
+      - 80:80
+    depends_on:
+      - django_gunicorn
     networks:
       - appnet
 
@@ -27,7 +31,8 @@ services:
     networks:
       - appnet
     depends_on:
-      - web-app
+      - django_gunicorn
+      - nginx
 
   celery:
     build:
@@ -37,11 +42,15 @@ services:
     networks:
       - appnet
     depends_on:
-      - web-app
+      - django_gunicorn
+      - nginx
       - redis
 
 networks:
   appnet:
     driver: bridge
     name: appnet
+
+volumes:
+  static:
 
