@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpRequest
@@ -12,8 +13,11 @@ from .forms import AddProductForm
 def index(request):
     return render(request, 'products/home.html')
 
+def about(request: HttpRequest):
+    return render(request, 'products/about.html')
 
-class ProductsList(DataMixin, ListView):
+
+class ProductsList(LoginRequiredMixin, DataMixin, ListView):
     template_name = 'products/products.html'
     context_object_name = 'products'
     title_page = 'Продукты'
@@ -56,5 +60,3 @@ class ShowProduct(LoginRequiredMixin, DataMixin, DetailView):
         return get_object_or_404(Product.objects, pk=self.kwargs[self.pk_url_kwarg])
 
 
-def about(request: HttpRequest):
-    return render(request, 'products/about.html')

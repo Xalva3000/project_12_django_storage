@@ -11,6 +11,8 @@ WORKDIR /storage
 
 EXPOSE 8000
 EXPOSE 80
+EXPOSE 5555
+
 
 COPY ./entrypoint.sh /
 ENTRYPOINT ["sh", "/entrypoint.sh"]
