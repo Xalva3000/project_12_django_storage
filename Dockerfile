@@ -10,7 +10,7 @@ COPY ./storage /storage
 WORKDIR /storage
 
 EXPOSE 8000
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 5555
 
 
