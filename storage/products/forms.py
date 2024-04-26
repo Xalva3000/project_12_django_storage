@@ -10,7 +10,7 @@ class AddProductForm(models.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.helper = FormHelper(self)
-		self.helper.add_input(Submit('внести', 'Внести', css_class="btn btn-success"))
+		self.helper.add_input(Submit('внести', 'Внести', css_class="btn btn-success mt-3"))
 
 	class Meta:
 		model = Product

@@ -1,18 +1,24 @@
-  <div class="dropdown d-grid gap-2">
+
+    <div class="dropdown d-grid gap-2">
+
     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-      Фильтр
+        Фильтр
     </button>
   
-    <form class="dropdown-menu p-4" method="GET" action="{% url 'contracts:contracts' %}">
-      
-      {% for f in form %}
-      <div class="form-group">
-          <label for="{{ f.id_for_label }}" class="form-label">{{ f.label }}</label>
-          {{ f }} {{f.errors}}
-      </div>
+    <form class="dropdown-menu p-4" method="GET"
+          {% if mod == 'plus' %}
+          action="{% url 'contracts:contracts_plus' %}"
+          {% elif mod == 'deleted' %}
+          action="{% url 'contracts:contracts_deleted' %}"
+          {% endif %}
+    >
+        {% for f in form %}
+            <div class="form-group">
+                <label for="{{ f.id_for_label }}" class="form-label">{{ f.label }}</label>
+                {{ f }} {{f.errors}}
+            </div>
         {% endfor %}
-       
-      <button type="submit" class="btn btn-primary w-auto">Фильтр</button>
-    
+        <button type="submit" class="btn btn-primary w-auto">Фильтр</button>
     </form>
+
   </div>

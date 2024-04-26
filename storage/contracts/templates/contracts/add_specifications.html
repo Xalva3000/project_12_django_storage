@@ -1,14 +1,52 @@
 {% extends 'base.html' %}
-
+{% load widget_tweaks %}
 {% block content %}
 
-{{ contract }}
+<h1 class="title">{{ contract }}</h1>
+<h5>Спецификации:</h5>
+<hr>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ formset.management_form }}
+
         {% for form in formset %}
-        {{form}}
+
+            {% if contract.contract_type == "Покупка" %}
+                <div class="input-group mb-1">
+                    <span class="input-group-text">Продукт:</span>
+                    {% render_field form.product class="form-select" %}
+                </div>
+            {% else %}
+                <div class="input-group mb-1">
+                    <span class="input-group-text">Объект склада:</span>
+                    {% render_field form.storage_item class="form-select" %}
+                </div>
+            {% endif %}
+
+            <div class="input-group mb-1">
+            <span class="input-group-text">Вес<sup>*обязательно</sup></span>
+                {% render_field form.variable_weight class="form-control" %}
+            </div>
+
+            <div class="input-group mb-1">
+            <span class="input-group-text">Количество</span>
+                {% render_field form.quantity class="form-control" %}
+            </div>
+
+            <div class="input-group mb-1">
+            <span class="input-group-text">Цена</span>
+                {% render_field form.price class="form-control" %}
+            </div>
+
+            <div class="form-check">
+            <span class="form-check-label">Удалить</span>
+                {% render_field form.DELETE class="form-check-input" type="checkbox" %}
+            </div>
+            <div>{{ form.contract }}</div>
+            <div>{{ form.id }}</div>
+            <hr>
         {% endfor %}
-        <p><button type="submit">Создать</button></p>
+
+        <p><button type="submit" class="btn btn-success">Создать</button></p>
     </form>
 {% endblock %}

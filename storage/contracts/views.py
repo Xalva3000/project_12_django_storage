@@ -22,7 +22,7 @@ class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
     template_name = "contracts/contracts_plus.html"
     context_object_name = "contracts"
-    title_page = "Контракты"
+    title_page = "Контракты+"
     category_page = "contracts"
     paginate_by = 10
     queryset = Contract.objects.filter(date_delete__isnull=True).order_by('-date_plan', '-pk')
@@ -35,6 +35,7 @@ class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filterset.form
+        context['mod'] = 'plus'
         return context
 
 
@@ -53,7 +54,6 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
         total_weight=SubquerySum(F('specifications__variable_weight') * F('specifications__quantity')),
         total_sum=SubquerySum(F('specifications__variable_weight') * F('specifications__quantity') * F('specifications__price')),
         total_payments=SubquerySum(F('payments__amount'))).order_by('-date_plan', '-pk')
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -100,9 +100,9 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
 
 class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
-    template_name = "contracts/contracts_minimal.html"
+    template_name = "contracts/contracts_deleted.html"
     context_object_name = "contracts"
-    title_page = "Контракты"
+    title_page = "Удаленные контракты"
     category_page = "contracts"
     paginate_by = 50
     queryset = Contract.objects.filter(date_delete__isnull=False).order_by('-date_plan', '-pk')
@@ -115,6 +115,7 @@ class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filterset.form
+        context['mod'] = 'deleted'
         return context
 
 
