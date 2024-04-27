@@ -4,11 +4,11 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
-from products.utils import contract_re_map, insert_action_notification, ceo_notification
+from products.utils import contract_re_map, insert_action_notification
 
 from contracts.models import Contract, Payment
 from storage_items.models import StorageItem
-
+from storage.notification import ceo_notification
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def switch_outcome_stage(contract, *, stage: str = 'reserve', operation: str = '
 @login_required
 def switch_reserve_by_contract_id(request, pk):
     logger.info(f"Attempt to switch a reserve status of contract {pk}.")
-    ceo_notification({'pk': pk})
+    ceo_notification.delay({'pk': pk})
     contract = get_object_or_404(Contract, pk=pk)
     re = contract_re_map(contract)
     specifications = contract.specifications.all()

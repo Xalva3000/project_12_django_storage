@@ -1,4 +1,13 @@
 services:
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    command: redis-server
+    restart: always
+    networks:
+      - appnet
+
   django_gunicorn:
     volumes:
       - static:/static
@@ -11,6 +20,12 @@ services:
       - 8000:8000
     networks:
       - appnet
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    command: gunicorn storage.wsgi:application --bind 0.0.0.0:8000
 
   nginx:
     build: ./nginx
@@ -23,22 +38,12 @@ services:
     networks:
       - appnet
 
-  redis:
-    image: redis:latest
-    ports:
-      - 6379:6379
-    command: redis-server
-    restart: always
-    networks:
-      - appnet
-    depends_on:
-      - django_gunicorn
-      - nginx
-
   celery:
     build:
       context: .
-    command: celery -A storage.notification:app worker --loglevel=info
+    volumes:
+      - ./storage:/storage
+    command: celery -A storage.notification:cel worker --loglevel=info
     restart: unless-stopped
     networks:
       - appnet
@@ -46,16 +51,21 @@ services:
       - django_gunicorn
       - nginx
       - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
 
   flower:
     build:
       context: .
     ports:
       - 5555:5555
-    command: celery -A storage.notification:app flower
-    restart: always
+    command: celery -A storage.notification:cel flower --port=5555
     networks:
       - appnet
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - django_gunicorn
       - nginx
@@ -70,4 +80,3 @@ networks:
 volumes:
   static:
   db_data:
-

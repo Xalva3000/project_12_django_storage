@@ -1,9 +1,8 @@
-from django.core.mail import send_mail
+
 from django.shortcuts import get_object_or_404
 
 from contracts.models import Contract, Action
 
-from storage.notification import app
 
 menu = [{'title': "Продукты", 'url_name': 'products:products'},
         {'title': "Контрагенты", 'url_name': 'contractors:contractors'},
@@ -91,13 +90,5 @@ def insert_action_notification(contract: int | Contract, action: str, extra_info
         new_action = Action.objects.create(contract=contract, action=message)
         new_action.save()
 
-@app.task
-def ceo_notification(data):
-    print('sending email')
-    if 'pk' in data:
-        send_mail('contract reserve status',
-                  f"switched reserve status of contract {data['pk']}",
-                  'storage-site@yandex.ru',
-                  ['maasania@gmail.com'],
-                  fail_silently=False)
-    print('sending email done')
+
+
