@@ -232,6 +232,7 @@ LOGGING = {
 }
 # "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
 # REDIS settings
+USE_CELERY = int(env("USE_CELERY")) if env("USE_CELERY").isdigit() else 0
 REDIS_HOST = "0.0.0.0"
 REDIS_PORT = "6379"
 CELERY_BROKER_URL = "redis://127.0.0.1:6379" if os.name == 'nt' else "redis://redis:6379/0"

@@ -52,7 +52,7 @@ a.page-link:hover {
         grid-template-columns: 1fr;
         grid-template-rows: repeat(4);
     }
-    
+
     .left-bar {
         grid-column: 1;
     }

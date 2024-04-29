@@ -23,10 +23,10 @@ class RegisterUserForm(UserCreationForm):
         self.helper = FormHelper(self)
         self.helper.add_input(Submit('регистрация', 'Регистрация', css_class="btn btn-success mt-3"))
 
-    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
-    permission_code = forms.CharField(label='Код разрешения', widget=forms.PasswordInput())
-    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    password2 = forms.CharField(label='Повтор пароля', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    username = forms.CharField(label='Логин')
+    permission_code = forms.CharField(label='Код разрешения')
+    password1 = forms.CharField(label='Пароль')
+    password2 = forms.CharField(label='Повтор пароля')
 
     class Meta:
         model = get_user_model()
@@ -35,10 +35,14 @@ class RegisterUserForm(UserCreationForm):
         labels = {'email': 'E-mail',
                   'first_name': 'Имя',
                   'last_name': 'Фамилия'}
-        widgets = {'email': forms.TextInput(attrs={'class': 'form-input'}),
-                   'first_name': forms.TextInput(attrs={'class': 'form-input'}),
-                   'last_name': forms.TextInput(attrs={'class': 'form-input'}),
-                   }
+        # widgets = {'email': forms.TextInput(attrs={'class': 'form-input'}),
+        #            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
+        #            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+        #            'passwword1': forms.PasswordInput(attrs={'class': 'form-input'}),
+        #            'passwword2': forms.PasswordInput(attrs={'class': 'form-input'}),
+        #            'permission_code': forms.PasswordInput(),
+        #            'username': forms.TextInput(attrs={'class': 'form-input'}),
+        #            }
 
         def clean_email(self):
             email = self.cleaned_data['email']
@@ -54,6 +58,11 @@ class RegisterUserForm(UserCreationForm):
 
 
 class ProfileUserForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('изменить', 'Изменить', css_class="btn btn-success mt-3"))
+
     username = forms.CharField(disabled=True, label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
     email = forms.CharField(disabled=True, label='E-mail', widget=forms.TextInput(attrs={'class': 'form-input'}))
 
@@ -62,12 +71,17 @@ class ProfileUserForm(forms.ModelForm):
         fields = ['username', 'email', 'first_name', 'last_name']
         labels = {'first_name': 'Имя',
                   'last_name': 'Фамилия', }
-        widgets = {'first_name': forms.TextInput(attrs={'class': 'form-input'}),
-                   'last_name': forms.TextInput(attrs={'class': 'form-input'}),
-                   }
+        # widgets = {'first_name': forms.TextInput(attrs={'class': 'form-input'}),
+        #            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+        #            }
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('изменить пароль', 'Изменить пароль', css_class="btn btn-success mt-3"))
+
     old_password = forms.CharField(label='Старый пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     new_password2 = forms.CharField(label='Подтверждение пароля',

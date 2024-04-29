@@ -17,7 +17,7 @@
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">Fish-Storage</a>
+          <a class="navbar-brand" href="{% url 'contracts:contracts' %}">Fish-Storage</a>
 
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -65,13 +65,13 @@
 <div class="main-container">
 
     <div class="left-bar">
+      {% if user.is_authenticated %}
       <div class="card">
         {% for i in tools %}
-        
             <a type="button" class="btn btn-outline-dark m-1" href="{% url i.path %}">{{i.title}}</a>
-        
         {% endfor %}
       </div>
+      {% endif %}
     </div>
 
 
@@ -81,19 +81,20 @@
 
         {% endblock content %}
     </div>
-
+    
     <div class="right-bar">
+      {% if user.is_authenticated %}
       <div class="card">
-        {% if user.is_authenticated %}
         {% for u in last_updates %}
         <div class="card-text">
           <p class="mb-0">{{ u.date_action }}</p>
           <p>{{ u.action }}</p>
         </div>
         {% endfor %}
-        {% endif %}
       </div>
+      {% endif %}
     </div>
+    
 
 </div>
 

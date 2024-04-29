@@ -12,14 +12,14 @@ class AddContractForm(models.ModelForm):
 		self.helper = FormHelper(self)
 		self.helper.add_input(Submit('внести', 'Внести', css_class="btn btn-success mt-3"))
 
-	contract_type = forms.ChoiceField(choices=Contract.ContractType.choices)
-	date_plan = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), )
+	contract_type = forms.ChoiceField(choices=Contract.ContractType.choices, widget=forms.Select(attrs={ 'class': 'form-select'}))
+	date_plan = forms.DateField(widget=forms.DateInput(attrs={'type': 'date',}), )
 	note = forms.Textarea()
-
+	# 'class': 'form-select'
 	class Meta:
 		model = Contract
 		fields = ['contract_type', 'date_plan', 'contractor', 'note']
-		# widgets = {'date_plan': forms.DateInput(attrs={'type': 'date'})}
+		widgets = {'contractor': forms.Select(attrs={'class': 'form-select'})}
 
 
 class AddSpecificationForm(models.ModelForm):
