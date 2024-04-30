@@ -2,9 +2,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
-
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from .forms import LoginUserForm, RegisterUserForm, ProfileUserForm, UserPasswordChangeForm
 
 
@@ -41,3 +42,17 @@ class UserPasswordChange(PasswordChangeView):
     form_class = UserPasswordChangeForm
     success_url = reverse_lazy("users:password_change_done")
     template_name = "users/password_change_form.html"
+
+def backup_db_schedule(request, days):
+    interval, _ = IntervalSchedule.objects.get_or_create(
+        every=days,
+        period=IntervalSchedule.DAYS,
+    )
+    PeriodicTask.objects.create(
+        interval=interval,
+        name="every_day",
+        task="storage.backup.back_up_sqlite_db",
+        # args=json.dumps(['arg1','arg2']),
+        # one_off=True,
+    )
+    return HttpResponse("Задача создана")

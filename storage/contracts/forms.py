@@ -2,6 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import models, inlineformset_factory
 from django import forms
+from decimal import Decimal
 
 from .models import Contract, Specification
 

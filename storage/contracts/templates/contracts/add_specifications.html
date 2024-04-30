@@ -10,15 +10,16 @@
         {{ formset.management_form }}
 
         {% for form in formset %}
+            <div class="form-error">{{ form.non_field_errors }}</div>
 
             {% if contract.contract_type == "Покупка" %}
                 <div class="input-group mb-1">
-                    <span class="input-group-text">Продукт:</span>
+                    <span class="input-group-text">Продукт</span>
                     {% render_field form.product class="form-select" %}
                 </div>
             {% else %}
                 <div class="input-group mb-1">
-                    <span class="input-group-text">Объект склада:</span>
+                    <span class="input-group-text">Объект склада</span>
                     {% render_field form.storage_item class="form-select" %}
                 </div>
             {% endif %}

@@ -1,7 +1,19 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
+from decimal import Decimal
+
+
+def decimal_validator(value):
+    if not isinstance(value, Decimal):
+        raise ValidationError("Variable must be Decimal")
+
+
+def positive_validator(value):
+    if value < 0:
+        raise ValidationError("Variable must be positive")
 
 
 class Contract(models.Model):
@@ -41,9 +53,12 @@ class Specification(models.Model):
         on_delete=models.PROTECT, null=True,
         related_name='specifications',
         verbose_name='Товар со клада')
-    variable_weight = models.DecimalField(decimal_places=2, max_digits=7, blank=False, null=False, default=1)
-    quantity = models.DecimalField(decimal_places=2, max_digits=7, blank=False, null=False, default=1)
-    price = models.DecimalField(decimal_places=2, max_digits=7, blank=False, null=False, default=0)
+    variable_weight = models.DecimalField(validators=[decimal_validator, positive_validator],
+                                          decimal_places=2, max_digits=7, blank=False, null=False, default=1)
+    quantity = models.DecimalField(validators=[decimal_validator, positive_validator],
+                                   decimal_places=2, max_digits=7, blank=False, null=False, default=1)
+    price = models.DecimalField(validators=[decimal_validator, positive_validator],
+                                decimal_places=2, max_digits=7, blank=False, null=False, default=0)
     contract = models.ForeignKey(
         'contracts.Contract',
         on_delete=models.PROTECT, null=True,

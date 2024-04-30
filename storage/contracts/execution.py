@@ -179,11 +179,14 @@ def delete_contract(request, pk):
 
 
 def change_manager_share(request, pk):
-    new_share = int(request.POST.get('new_share', 0))
-    contract = Contract.objects.get(pk=pk)
-    contract.manager_share = new_share
-    contract.save()
-    logger.info(f"Manager share of Contract {pk} changed.")
+    try:
+        new_share = abs(int(request.POST.get('new_share', 0)))
+        contract = Contract.objects.get(pk=pk)
+        contract.manager_share = new_share
+        contract.save()
+        logger.info(f"Manager share of Contract {pk} changed.")
+    except ValueError:
+        pass
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
@@ -199,12 +202,17 @@ def change_note(request, pk):
 
 
 def add_payment(request, pk):
-    action = 'new_payment'
-    amount = int(request.POST.get(action, 0))
-    payment = Payment.objects.create(contract_id=pk, amount=amount)
-    payment.save()
-    insert_action_notification(contract=pk, action=action, extra_info=amount)
-    logger.info(f"Payment has been accepted for contract {pk}.")
+    try:
+        action = 'new_payment'
+        amount = int(request.POST.get(action, 0))
+        if amount == 0:
+            raise ValueError
+        payment = Payment.objects.create(contract_id=pk, amount=amount)
+        payment.save()
+        insert_action_notification(contract=pk, action=action, extra_info=amount)
+        logger.info(f"Payment has been accepted for contract {pk}.")
+    except ValueError:
+        pass
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 

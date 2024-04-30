@@ -43,7 +43,7 @@ services:
       context: .
     volumes:
       - ./storage:/storage
-    command: celery -A storage.notification:cel worker --loglevel=info
+    command: celery -A storage.notification:app worker --loglevel=info --pool eventlet
     restart: unless-stopped
     networks:
       - appnet
@@ -60,7 +60,22 @@ services:
       context: .
     ports:
       - 5555:5555
-    command: celery -A storage.notification:cel flower --port=5555
+    command: celery -A storage.notification:app flower --port=5555
+    networks:
+      - appnet
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - django_gunicorn
+      - nginx
+      - celery
+      - redis
+
+  celery-beat:
+    build:
+      context: .
+    command: celery -A storage beat -l INFO
     networks:
       - appnet
     environment:

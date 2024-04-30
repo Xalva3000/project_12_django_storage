@@ -13,6 +13,7 @@ import os
 from datetime import date
 from pathlib import Path
 import environ
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,6 +56,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'easyaudit',
     'widget_tweaks',
+    'django_celery_beat',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -241,3 +244,13 @@ CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379" if os.name == 'nt' else "redis:
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+#
+
+CELERY_BEAT_SCHEDULE = {
+    'send_db_backup': {
+        'task': 'send_db_file',
+        'schedule': crontab(hour=5, minute=0),
+    },
+}

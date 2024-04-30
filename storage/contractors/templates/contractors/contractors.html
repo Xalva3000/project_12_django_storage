@@ -9,7 +9,13 @@
 
 <div class="card">
     <div class="card-text"><a class="btn stretched-link" href="{% url 'contractors:contractor' contractor.pk %}">{{ contractor }}</a>
-            <span class="badge text-bg-success rounded-pill">{{ contractor.contracts.count }}</span></div></div>
+
+    {% if contractor.contracts.count == 0 %}
+    <span class="badge text-bg-secondary rounded-pill">
+    {% else %}
+    <span class="badge text-bg-success rounded-pill">
+    {% endif %}
+    {{ contractor.contracts.count }}</span></div></div>
 {% endfor %}
 
 
