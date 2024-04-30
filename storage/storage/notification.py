@@ -16,8 +16,8 @@ app.autodiscover_tasks()
 def ceo_notification(data, email=EMAIL_HOST_USER):
     if 'pk' in data:
         print('sending email')
-        send_mail('contract reserve status',
-                  f"switched reserve status of contract {data['pk']}",
+        send_mail(f"Switched reserve status of contract {data['pk']}",
+                  '',
                   'storage-site@yandex.ru',
                   [email],
                   fail_silently=False)
@@ -44,7 +44,7 @@ def send_db_file():
     print('db_send')
     email = EmailMessage(
         'Database Backup',
-        'Please find the database backup attached.',
+        '',
         'storage-site@yandex.ru',
         ['maasania@gmail.com', 'storage-site@yandex.ru'],
     )

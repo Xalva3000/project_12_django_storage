@@ -43,21 +43,27 @@ a.page-link:hover {
 }
 
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 1000px) {
     html, body {
-        font-size: 30px;
+        font-size: 25px;
+    }
+
+    a.nav-link {
+        font-size: 25px;
     }
 
     .main-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(4);
+        grid-template-columns: 1;
+        grid-template-rows: repeat(3);
     }
 
     .left-bar {
         grid-column: 1;
+        max-width: 100%;
     }
     .container {
         grid-column: 1;
+        max-width: 100%;
     }
     .right-bar {
         grid-column: 1;
