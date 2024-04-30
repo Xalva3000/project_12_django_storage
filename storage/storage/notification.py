@@ -41,11 +41,12 @@ def notify_tasker(data, /, *, email=EMAIL_HOST_USER, fail_silently=True):
 
 @app.task
 def send_db_file():
+    print('db_send')
     email = EmailMessage(
         'Database Backup',
         'Please find the database backup attached.',
         'storage-site@yandex.ru',
-        ['maasania@gmail.com'],
+        ['maasania@gmail.com', 'storage-site@yandex.ru'],
     )
     email.attach_file(BASE_DIR / 'db.sqlite3')
     email.send()

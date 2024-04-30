@@ -43,7 +43,7 @@ services:
       context: .
     volumes:
       - ./storage:/storage
-    command: celery -A storage.notification:app worker --loglevel=info --pool eventlet
+    command: celery -A storage.notification:app worker -l INFO --pool eventlet
     restart: unless-stopped
     networks:
       - appnet
@@ -75,7 +75,7 @@ services:
   celery-beat:
     build:
       context: .
-    command: celery -A storage beat -l INFO
+    command: celery -A storage beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     networks:
       - appnet
     environment:
