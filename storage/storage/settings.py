@@ -246,11 +246,10 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-#
 
 CELERY_BEAT_SCHEDULE = {
     'send_db_backup': {
         'task': 'send_db_file',
-        'schedule': crontab(hour=5, minute=0),
+        'schedule': crontab(hour=3, minute=0),
     },
 }
