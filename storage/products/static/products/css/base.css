@@ -61,7 +61,7 @@ a.page-link:hover {
         grid-column: 1;
         max-width: 100%;
     }
-    .container {
+    .content {
         grid-column: 1;
         max-width: 100%;
     }
