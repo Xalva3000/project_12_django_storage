@@ -56,7 +56,7 @@ class Specification(models.Model):
     variable_weight = models.DecimalField(validators=[decimal_validator, positive_validator],
                                           decimal_places=2, max_digits=7, blank=False, null=False, default=1)
     quantity = models.DecimalField(validators=[decimal_validator, positive_validator],
-                                   decimal_places=2, max_digits=7, blank=False, null=False, default=1)
+                                   decimal_places=2, max_digits=10, blank=False, null=False, default=1)
     price = models.DecimalField(validators=[decimal_validator, positive_validator],
                                 decimal_places=2, max_digits=7, blank=False, null=False, default=0)
     contract = models.ForeignKey(
