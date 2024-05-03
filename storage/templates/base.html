@@ -65,7 +65,7 @@
 <div class="main-container">
 
     <div class="left-bar">
-      {% if user.is_authenticated %}
+      {% if user.is_authenticated and tools %}
       <div class="card">
         {% for i in tools %}
             <a type="button" class="btn btn-outline-dark m-1" href="{% url i.path %}">{{i.title}}</a>
@@ -75,7 +75,7 @@
     </div>
 
 
-    <div class="content">
+    <div class="content p-3">
        <h1 class="title">{{ title }}</h1>
         {% block content %}
 

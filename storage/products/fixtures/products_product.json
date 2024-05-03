@@ -1,1 +1,310 @@
-[{"model": "products.product", "pk": 1, "fields": {"fish": "Лосось", "cutting": "Брюшко", "size": "1+", "producer": "", "package": "", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 2, "fields": {"fish": "Лосось", "cutting": "Брюшко", "size": "1-3", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 3, "fields": {"fish": "Лосось", "cutting": "Брюшко", "size": "2+", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 4, "fields": {"fish": "Лосось", "cutting": "Брюшко", "size": "3+", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 5, "fields": {"fish": "Лосось", "cutting": "Брюшко Зел", "size": "", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 6, "fields": {"fish": "Лосось", "cutting": "Головы", "size": "400-", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 7, "fields": {"fish": "Лосось", "cutting": "Кусок", "size": "", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 8, "fields": {"fish": "Лосось", "cutting": "Филе", "size": "Трим А", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 9, "fields": {"fish": "Лосось", "cutting": "Филе", "size": "Трим С", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 10, "fields": {"fish": "Лосось", "cutting": "Хребет", "size": "", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 11, "fields": {"fish": "Лосось", "cutting": "Обрезь", "size": "", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-12"}}, {"model": "products.product", "pk": 12, "fields": {"fish": "Минтай", "cutting": "БГ", "size": "S", "producer": "Алаид", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-11"}}, {"model": "products.product", "pk": 13, "fields": {"fish": "Минтай", "cutting": "БГ", "size": "M", "producer": "Алаид", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-11"}}, {"model": "products.product", "pk": 14, "fields": {"fish": "Минтай", "cutting": "БГ", "size": "L", "producer": "Алаид", "package": "мешок", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-11"}}, {"model": "products.product", "pk": 15, "fields": {"fish": "Сельдь", "cutting": "НР", "size": "200-300", "producer": "Акрос", "package": "короб", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-11"}}, {"model": "products.product", "pk": 16, "fields": {"fish": "Сельдь", "cutting": "НР", "size": "300-400", "producer": "Акрос", "package": "короб", "note": "", "date_create": "2024-04-11", "date_update": "2024-04-11"}}, {"model": "products.product", "pk": 17, "fields": {"fish": "Кижуч", "cutting": "НР", "size": "L", "producer": "Алаид", "package": "мешок", "note": "икряной", "date_create": "2024-04-15", "date_update": "2024-04-15"}}, {"model": "products.product", "pk": 18, "fields": {"fish": "Кижуч", "cutting": "НР", "size": "M", "producer": "Алаид", "package": "мешок", "note": "", "date_create": "2024-04-17", "date_update": "2024-04-17"}}, {"model": "products.product", "pk": 19, "fields": {"fish": "", "cutting": "", "size": "", "producer": "", "package": "мешок", "note": "", "date_create": "2024-04-20", "date_update": "2024-04-20"}}]
+[
+{
+  "model": "products.product",
+  "pk": 1,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Брюшко",
+    "size": "1+",
+    "producer": "",
+    "package": "",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 2,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Брюшко",
+    "size": "1-3",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 3,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Брюшко",
+    "size": "2+",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 4,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Брюшко",
+    "size": "3+",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 5,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Брюшко Зел",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 6,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Головы",
+    "size": "400-",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 7,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Кусок",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 8,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Филе",
+    "size": "Трим А",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 9,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Филе",
+    "size": "Трим С",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 10,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Хребет",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 11,
+  "fields": {
+    "fish": "Лосось",
+    "cutting": "Обрезь",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-12"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 12,
+  "fields": {
+    "fish": "Минтай",
+    "cutting": "БГ",
+    "size": "S",
+    "producer": "Алаид",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-11"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 13,
+  "fields": {
+    "fish": "Минтай",
+    "cutting": "БГ",
+    "size": "M",
+    "producer": "Алаид",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-11"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 14,
+  "fields": {
+    "fish": "Минтай",
+    "cutting": "БГ",
+    "size": "L",
+    "producer": "Алаид",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-11"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 15,
+  "fields": {
+    "fish": "Сельдь",
+    "cutting": "НР",
+    "size": "200-300",
+    "producer": "Акрос",
+    "package": "короб",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-11"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 16,
+  "fields": {
+    "fish": "Сельдь",
+    "cutting": "НР",
+    "size": "300-400",
+    "producer": "Акрос",
+    "package": "короб",
+    "note": "",
+    "date_create": "2024-04-11",
+    "date_update": "2024-04-11"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 17,
+  "fields": {
+    "fish": "Кижуч",
+    "cutting": "НР",
+    "size": "L",
+    "producer": "Алаид",
+    "package": "мешок",
+    "note": "икряной",
+    "date_create": "2024-04-15",
+    "date_update": "2024-04-15"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 18,
+  "fields": {
+    "fish": "Кижуч",
+    "cutting": "НР",
+    "size": "M",
+    "producer": "Алаид",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-17",
+    "date_update": "2024-04-17"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 19,
+  "fields": {
+    "fish": "",
+    "cutting": "",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-20",
+    "date_update": "2024-04-20"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 20,
+  "fields": {
+    "fish": "2404",
+    "cutting": "",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-24",
+    "date_update": "2024-04-24"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 21,
+  "fields": {
+    "fish": "2504",
+    "cutting": "",
+    "size": "",
+    "producer": "",
+    "package": "мешок",
+    "note": "",
+    "date_create": "2024-04-25",
+    "date_update": "2024-04-25"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 22,
+  "fields": {
+    "fish": "ghng",
+    "cutting": "",
+    "size": "",
+    "producer": "",
+    "package": "",
+    "note": "",
+    "date_create": "2024-04-30",
+    "date_update": "2024-04-30"
+  }
+}
+]

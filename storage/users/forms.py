@@ -24,9 +24,9 @@ class RegisterUserForm(UserCreationForm):
         self.helper.add_input(Submit('регистрация', 'Регистрация', css_class="btn btn-success mt-3"))
 
     username = forms.CharField(label='Логин')
-    permission_code = forms.CharField(label='Код разрешения')
-    password1 = forms.CharField(label='Пароль')
-    password2 = forms.CharField(label='Повтор пароля')
+    permission_code = forms.CharField(label='Код разрешения', widget=forms.PasswordInput())
+    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput())
+    password2 = forms.CharField(label='Повтор пароля', widget=forms.PasswordInput())
 
     class Meta:
         model = get_user_model()
@@ -35,26 +35,27 @@ class RegisterUserForm(UserCreationForm):
         labels = {'email': 'E-mail',
                   'first_name': 'Имя',
                   'last_name': 'Фамилия'}
-        # widgets = {'email': forms.TextInput(attrs={'class': 'form-input'}),
-        #            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
-        #            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
-        #            'passwword1': forms.PasswordInput(attrs={'class': 'form-input'}),
+        # widgets = {'passwword1': forms.PasswordInput(attrs={'class': 'form-input'}),
         #            'passwword2': forms.PasswordInput(attrs={'class': 'form-input'}),
-        #            'permission_code': forms.PasswordInput(),
-        #            'username': forms.TextInput(attrs={'class': 'form-input'}),
+        #            'permission_code': forms.PasswordInput(attrs={'class': 'form-input'}),
         #            }
 
-        def clean_email(self):
-            email = self.cleaned_data['email']
-            if get_user_model().objects.filter(email=email).exists():
-                raise forms.ValidationError
-            return email
+        # 'email': forms.TextInput(attrs={'class': 'form-input'}),
+        #
+        #            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
+        #            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+        # 'username': forms.TextInput(attrs={'class': 'form-input'})
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if get_user_model().objects.filter(email=email).exists():
+            raise forms.ValidationError('Данный пользователь уже существует в базе.')
+        return email
 
-        def clean_permission_code(self):
-            p_code = self.cleaned_data['permission_code']
-            if p_code != PERMISSION_CODE:
-                raise forms.ValidationError
-            return p_code
+    def clean_permission_code(self):
+        p_code = self.cleaned_data['permission_code']
+        if p_code != PERMISSION_CODE:
+            raise forms.ValidationError('Введите новый код разрешения.')
+        return p_code
 
 
 class ProfileUserForm(forms.ModelForm):

@@ -25,7 +25,7 @@ class ProductsList(LoginRequiredMixin, DataMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return Product.objects.all()
+        return Product.objects.all().order_by('-pk')
 
 
 class AddProduct(LoginRequiredMixin, DataMixin, CreateView):
