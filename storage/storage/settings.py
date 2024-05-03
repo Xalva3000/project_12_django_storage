@@ -34,6 +34,7 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 INTERNAL_IPS = ["127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(" ")
+SITE_URL = 'storage-monitor.ru'
 
 # Application definition
 INSTALLED_APPS = [

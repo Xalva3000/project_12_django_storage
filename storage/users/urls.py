@@ -33,5 +33,4 @@ urlpatterns = [
          PasswordResetCompleteView.as_view(
              template_name='users/password_reset_complete.html'),
          name='password_reset_complete'),
-    path('create_backup', views.backup_db_schedule, name='create_backup_schedule')
 ]
