@@ -73,8 +73,11 @@ def switch_outcome_stage(contract, *, stage: str = 'reserve', operation: str = '
 @login_required
 def switch_reserve_by_contract_id(request, pk):
     logger.info(f"Attempt to switch a reserve status of contract {pk}.")
-    notify_tasker({'pk': pk})
     contract = get_object_or_404(Contract, pk=pk)
+    if contract.date_delete:
+        uri = reverse('contracts:contracts_deleted')
+        return redirect(uri)
+    notify_tasker({'pk': pk})
     re = contract_re_map(contract)
     specifications = contract.specifications.all()
     operation = False
@@ -110,6 +113,9 @@ def switch_reserve_by_contract_id(request, pk):
 @login_required
 def switch_payment_by_contract_id(request, pk):
     contract = get_object_or_404(Contract, pk=pk)
+    if contract.date_delete:
+        uri = reverse('contracts:contracts_deleted')
+        return redirect(uri)
     if contract.specifications.all():
         action = 'unpaid' if contract.paid else 'paid'
         contract.paid = not contract.paid
@@ -124,6 +130,9 @@ def switch_payment_by_contract_id(request, pk):
 def switch_execution_by_contract_id(request, pk):
     logger.info(f"Attempt to switch execution status of contract {pk}.")
     contract = get_object_or_404(Contract, pk=pk)
+    if contract.date_delete:
+        uri = reverse('contracts:contracts_deleted')
+        return redirect(uri)
     specifications = contract.specifications.all()
     re = contract_re_map(contract)
     operation = False

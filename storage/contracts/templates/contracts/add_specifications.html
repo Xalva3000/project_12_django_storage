@@ -12,7 +12,7 @@
         {% for form in formset %}
             <div class="form-error">{{ form.non_field_errors }}</div>
 
-            {% if contract.contract_type == "Покупка" %}
+            {% if contract.contract_type == "income" %}
                 <div class="input-group mb-1">
                     <span class="input-group-text">Продукт</span>
                     {% render_field form.product class="form-select" %}

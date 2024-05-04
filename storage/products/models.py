@@ -13,9 +13,8 @@ class Product(models.Model):
     cutting = models.CharField(max_length=10, blank=True, verbose_name='Разделка')
     size = models.CharField(max_length=15, blank=True, verbose_name='Размер')
     producer = models.CharField(max_length=50, blank=True, verbose_name='Производитель')
-    package = models.CharField(max_length=15, blank=True, default='мешок', verbose_name='Упаковка')
-    # weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name='Вес')
-    note = models.TextField(blank=True)
+    package = models.CharField(max_length=15, blank=True, verbose_name='Упаковка')
+    note = models.TextField(blank=True, verbose_name='Заметки')
     date_create = models.DateField(auto_now_add=True, verbose_name='Дата создания')
     date_update = models.DateField(auto_now=True, verbose_name='Дата изменения')
 
@@ -24,7 +23,6 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('products:product', kwargs={'pk': self.pk})
-
 
     def __str__(self):
         return f"{self.fish} {self.cutting} {self.size} \"{self.producer}\" ({self.pk}id)"

@@ -7,17 +7,14 @@
 {% include 'contracts/filter_form_drop.html' %}
 
 
-<!-- <div class="card container-info">  -->
   <table class="table table-striped table-hover mt-1 mr-1 p-1">
     <tr>
       <td colspan="2">Кол-во контрактов соответствующих фильтру</td>
       <td>{{ query_length }}</td>
     </tr>
   </table>
-<!-- </div> -->
 
 
-<!-- <div class="card">  -->
 <p>
   <a class="btn btn-outline-secondary d-grid gap-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
     Рассчеты
@@ -26,7 +23,6 @@
 <div class="collapse" id="collapseExample">
   <div class="card">
 
-<!-- <div class="card">  -->
   <table class="table table-striped table-hover">
     <thead>
           <tr>
@@ -108,8 +104,7 @@
   </table>
 </div>
 </div>
-<!-- </div> -->
-<!-- </div> -->
+
 </div>
     <div class="container-content">
 
@@ -134,12 +129,11 @@
             <div class="card-text"><a class="btn stretched-link p-0" href="{% url 'contracts:contract' contract.pk %}">
             #{{ contract.pk }} --
               {{ contract.date_plan|date:"d M Y" }} --
-              {% if contract.contract_type == 'Покупка' %}
+              {% if contract.contract_type == 'income' %}
               <b class="text-danger">Завоз</b>
               {% else %}
               {% endif %}
                {{ contract.contractor.name }} --
-              <!-- paid|yesno:"1,0" -->
               {{ contract.total_weight|default:0|floatformat:2|intcomma }}кг. 
               Оплата {{ contract.total_payments|default:0|floatformat:2|intcomma }} из
               {{ contract.total_sum|default:0|floatformat:2|intcomma }}

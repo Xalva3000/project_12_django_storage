@@ -24,7 +24,7 @@
           card p-1 mb-1 bg-secondary-subtle text-secondary-emphasis
           {% endif %}">
           <div class="card-header"><a href="{% url 'contracts:contract' contract.pk %}">#{{ contract.pk }}--
-            {{ contract.date_plan|date:"d M Y" }}--{{ contract.contract_type }} {{ contract.contractor.name }} 
+            {{ contract.date_plan|date:"d M Y" }}--{{ contract.get_contract_type_display }} {{ contract.contractor.name }}
             {{ contract.reserved|yesno:"1,0" }}|{{ contract.executed|yesno:"1,0" }}|{{ contract.paid|yesno:"1,0" }}</a>
           </div>
           <div class="card-body">

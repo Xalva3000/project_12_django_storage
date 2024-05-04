@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from sql_util.aggregates import SubquerySum
 
-from .forms import AddContractForm
+from .forms import AddContractForm, UpdateContractForm
 from .models import Contract, Specification, Payment
 from products.utils import DataMixin, tools, menu, insert_action_notification
 from .filters import ContractFilter
@@ -97,7 +97,6 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
         return result
 
 
-
 class DeletedContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
     model = Contract
     template_name = "contracts/contracts_deleted.html"
@@ -133,6 +132,7 @@ class AddContract(LoginRequiredMixin, DataMixin, CreateView):
         contract = form.save(commit=False)
         contract.manager = self.request.user
         return super().form_valid(form)
+
 
 class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
     model = Contract
@@ -198,8 +198,7 @@ def add_specifications(request, pk):
 
 class UpdateContract(LoginRequiredMixin, DataMixin, UpdateView):
     model = Contract
-    form_class = AddContractForm
-    # fields = ['contract_type', 'date_plan','contractor', 'note',]
+    form_class = UpdateContractForm
     template_name = 'contracts/add_contract.html'
     title_page = 'Редактирование контракта'
     category_page = 'contracts'

@@ -16,13 +16,13 @@
         {% endif %}
            mb-3" style="max-width: 50rem;">
     <div class="card-header">#{{ contract.pk }}--
-        {{ contract.date_plan|date:"d M Y" }}--{{ contract.contract_type }} {{ contract.contractor.name }} 
+        {{ contract.date_plan|date:"d M Y" }}--{{ contract.get_contract_type_display }} {{ contract.contractor.name }}
         {{ contract.reserved|yesno:"1,0" }}|{{ contract.executed|yesno:"1,0" }}|{{ contract.paid|yesno:"1,0" }}
          || менеджер: {{ contract.manager }}</div>
 
     
 <div class="btn-group m-3" role="group" aria-label="Basic mixed styles example">
-    {% if contract.contract_type == 'Продажа' %}
+    {% if contract.contract_type == 'outcome' %}
     <a href="{% url 'contracts:contract_reserve' contract.pk %}">
         {% if contract.reserved %}
         <button type="button"class="btn btn-secondary">Снять бронь</button>
@@ -42,7 +42,7 @@
 
 
     <a href="{% url 'contracts:contract_execution' contract.pk %}">
-    {% if contract.contract_type == 'Продажа' %}
+    {% if contract.contract_type == 'outcome' %}
         {% if contract.executed %}
         <button type="button" class="btn btn-secondary">Откат отгрузки</button>
         {% else %}
@@ -171,7 +171,7 @@
     </table>
     
     <p>Общая сумма контракта: {{ total|floatformat:2|intcomma }}</p>
-    {% if contract.contract_type == "Продажа" %}
+    {% if contract.contract_type == "outcome" %}
     <p>Товар закуплен на сумму: {{ purchase|floatformat:2|intcomma }}</p>
     <p>Разница: {{ profit|floatformat:2|intcomma }}</p>
     {% endif %}

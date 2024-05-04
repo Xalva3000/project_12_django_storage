@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
-
-
 {% block content %}
-<a href="{% url 'contractors:update_contractor' contractor.pk %}"><button>Редактировать</button></a>
-<p>{{ contractor }}</p>
+
+<h5>{{ contractor }}</h5>
+
+<ul class="list-group list-group-flush">
+    <li class="list-group-item">Идентификатор: {{ contractor.pk }}</li>
+    <li class="list-group-item">Название: {{ contractor.name }}</li>
+    <li class="list-group-item">Адрес: {{ contractor.address }}</li>
+    <li class="list-group-item">E-mail: {{ contractor.email }}</li>
+    <li class="list-group-item">Контакты: {{ contractor.contact_data }}</li>
+    <li class="list-group-item">Дата создания: {{ contractor.date_create }}</li>
+    <li class="list-group-item">Дата изменения: {{ contractor.date_update }}</li>
+</ul>
+
+<a href="{% url 'contractors:update_contractor' contractor.pk %}">
+    <button class="btn btn-success mt-4">Редактировать</button></a>
 
 {% endblock %}

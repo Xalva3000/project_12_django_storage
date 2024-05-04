@@ -18,27 +18,29 @@ def positive_validator(value):
 
 class Contract(models.Model):
     class ContractType(models.TextChoices):
-        INCOME = 'Покупка'
-        OUTCOME = 'Продажа'
+        INCOME = ('income', 'Покупка')
+        OUTCOME = ('outcome', 'Продажа')
 
-    contract_type = models.CharField(max_length=7, choices=ContractType, default=ContractType.OUTCOME)
-    date_plan = models.DateField(default=datetime.date.today)
+    contract_type = models.CharField(max_length=7, choices=ContractType,
+                                     default=ContractType.OUTCOME, verbose_name='Тип контракта')
+    date_plan = models.DateField(default=datetime.date.today, verbose_name='Планируемая дата исполнения')
     reserved = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
     executed = models.BooleanField(default=False)
-    note = models.TextField(blank=True)
+    note = models.TextField(blank=True, verbose_name='Заметки')
     date_create = models.DateField(auto_now_add=True)
     date_execution = models.DateField(blank=True, null=True)
     date_delete = models.DateField(blank=True, null=True)
     manager_share = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True, default=0)
 
     contractor = models.ForeignKey('contractors.Contractor', on_delete=models.PROTECT,
-                                   null=True, related_name='contracts')
+                                   null=True, related_name='contracts', verbose_name='Контрагент')
     manager = models.ForeignKey(get_user_model(), on_delete=models.PROTECT,
                                 related_name='contracts', null=True, default=None)
 
     def __str__(self):
-        return f"{self.pk} {self.contract_type} {self.contractor.name} " \
+        russian_contract_type = 'Продажа' if self.contract_type == 'outcome' else 'Покупка'
+        return f"{self.pk} {russian_contract_type} {self.contractor.name} " \
                f"({'1' if self.reserved else '0'}|{'1' if self.executed else '0'}|{'1' if self.paid else '0'})"
 
 

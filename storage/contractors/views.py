@@ -22,7 +22,7 @@ class ContractorsList(LoginRequiredMixin, DataMixin, ListView):
 
 class AddContractor(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddContractorForm
-    template_name = 'products/add_product.html'
+    template_name = 'contractors/add_contractor.html'
     title_page = 'Добавление контрагента'
     category_page = 'contractors'
 
@@ -34,7 +34,7 @@ class AddContractor(LoginRequiredMixin, DataMixin, CreateView):
 
 class UpdateContractor(LoginRequiredMixin, DataMixin, UpdateView):
     model = Contractor
-    fields = ['name', 'address', 'email', 'contact_data',]
+    form_class = AddContractorForm
     template_name = 'contractors/add_contractor.html'
     title_page = 'Редактирование контрагента'
     category_page = 'contractors'
