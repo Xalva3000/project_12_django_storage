@@ -8,6 +8,10 @@ class NotZeroManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(~Q(available=0) | ~Q(stored=0))
 
+class AvailableManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(~Q(available=0))
+
 
 class StorageItem(models.Model):
     product = models.ForeignKey(
@@ -20,6 +24,7 @@ class StorageItem(models.Model):
     available = models.DecimalField(default=0, null=False, max_digits=12, decimal_places=2)
     stored = models.DecimalField(default=0, null=False, max_digits=12, decimal_places=2)
 
+    sellable = AvailableManager()
     not_zero = NotZeroManager()
     objects = models.Manager()
 

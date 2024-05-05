@@ -2,13 +2,12 @@
 from django.shortcuts import get_object_or_404
 
 from contracts.models import Contract, Action
-
+from django.urls import reverse_lazy
 
 menu = [{'title': "Продукты", 'url_name': 'products:products'},
         {'title': "Контрагенты", 'url_name': 'contractors:contractors'},
         {'title': "Контракты", 'url_name': 'contracts:contracts'},
-        {'title': "Склад", 'url_name': 'storage_items:storage_items'},
-        # {'title': "Счет", 'url_name': 'contact'},
+        {'title': "Склад", 'url_name': 'storage_items:not_zero'},
         ]
 
 tools = {
@@ -20,7 +19,8 @@ tools = {
                   {'title': "Список+", 'path': 'contracts:contracts_plus'},
                   {'title': "Добавить", 'path': 'contracts:add_contract'},
                   {'title': "Удаленные", 'path': 'contracts:contracts_deleted'}, ],
-    "storage_items": [{'title': 'Список', 'path': 'storage_items:storage_items'}, ],
+    "storage_items": [{'title': 'Список', 'path': 'storage_items:not_zero'},
+                      {'title': 'К продаже', 'path': 'storage_items:available'},],
 }
 
 
