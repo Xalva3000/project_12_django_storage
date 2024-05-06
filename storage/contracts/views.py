@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -11,11 +11,22 @@ from .forms import AddContractForm, UpdateContractForm
 from .models import Contract, Specification, Payment
 from products.utils import DataMixin, tools, menu, insert_action_notification
 from .filters import ContractFilter
+from datetime import date
 
 
 
 def index(request):
     return render(request, 'base.html', {'title': 'Contracts'})
+
+
+class ContractsTodayList(LoginRequiredMixin, DataMixin, ListView):
+    model = Contract
+    template_name = "contracts/contracts_today.html"
+    context_object_name = "contracts"
+    title_page = "Отгрузки сегодня"
+    category_page = "contracts"
+    paginate_by = 20
+    queryset = Contract.objects.filter(Q(date_delete__isnull=True), Q(date_plan=date.today())).order_by('-pk')
 
 
 class ContractsPlusList(LoginRequiredMixin, DataMixin, ListView):

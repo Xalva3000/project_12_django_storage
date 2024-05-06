@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card"> 
+    <table class="table table-striped table-hover mt-1 mr-1 p-1">
+      <tr>
+        <td colspan="2">Отгрузок сегодня</td>
+        <td>{{ contracts.count }}</td>
+      </tr>
+    </table>
+  </div>
+
+    <div class="container-content">
+
+        {% for contract in contracts %}
+        <div class="
+        {% if contract.reserved and contract.executed and contract.paid %}
+        card p-1 mb-1 bg-success-subtle text-dark
+        {% elif contract.reserved and contract.executed and not contract.paid %}
+        card p-1 mb-1 bg-danger-subtle text-danger-emphasis
+        {% elif contract.reserved and not contract.executed and contract.paid %}
+        card p-1 mb-1 bg-primary-subtle text-primary-emphasis
+        {% elif contract.reserved and not contract.executed and not contract.paid %}
+        card p-1 mb-1 bg-warning-subtle text-warning-emphasis
+        {% else %}
+        card p-1 mb-1 bg-secondary-subtle text-secondary-emphasis
+        {% endif %}">
+
+          <div class="card-header">
+            #{{ contract.pk }} --{{ contract.date_plan|date:"d M Y" }}-- {{ contract.get_contract_type_display }} {{ contract.contractor.name }}
+          </div>
+
+          <div class="card-body">
+              <ol class="mb-0">
+                {% for spec in contract.specifications.all %}
+                <li class="card-text">{{ spec }}</li>
+                {% endfor %}
+              </ol>
+          </div>
+          <hr class="p-0 m-0 mb-2">
+          <div class="card-text mx-3 mb-2">
+            {{ contract.note }}
+          </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+{% endblock %}
+

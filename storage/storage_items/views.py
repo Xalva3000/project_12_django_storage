@@ -30,6 +30,7 @@ class StorageItemsAvailableList(LoginRequiredMixin, DataMixin, ListView):
         return StorageItem.sellable.annotate(weight_available=Sum(F('weight') * F('available')),
                                              weight_stored=Sum(F('weight') * F('stored'))).order_by('product__fish', 'price')
 
+
 class StorageItemsGroupList(LoginRequiredMixin, DataMixin, ListView):
     template_name = 'storage_items/storage_items.html'
     context_object_name = 'storage_items'

@@ -5,6 +5,7 @@ from . import execution
 
 urlpatterns = [
     path("", views.ContractsMinimalList.as_view(), name='contracts'),
+    path("today/", views.ContractsTodayList.as_view(), name='contracts_today'),
     path("plus/", views.ContractsPlusList.as_view(), name='contracts_plus'),
     path("deleted/", views.DeletedContractsMinimalList.as_view(), name='contracts_deleted'),
     path("add_contract/", views.AddContract.as_view(), name='add_contract'),

@@ -2,8 +2,6 @@ from django.db import models
 from django.db.models import Q
 
 
-# Create your models here.
-
 class NotZeroManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(~Q(available=0) | ~Q(stored=0))

@@ -19,14 +19,14 @@ def switch_income_reserve_stage(contract, *, operation: str = 'apply'):
     operation :: str = 'apply' or 'cancel'. """
     demand = {
         'apply': {'available': lambda s_i, num: s_i.available + num},
-        'cancel': {'available': lambda s_i, num: s_i.available - num,}
+        'cancel': {'available': lambda s_i, num: s_i.available - num},
     }
     specifications = contract.specifications.all()
     count = 1
     for specification in specifications:
         storage_item, is_created = StorageItem.objects.get_or_create(product=specification.product,
-                                                         weight=specification.variable_weight,
-                                                         price=specification.price)
+                                                                     weight=specification.variable_weight,
+                                                                     price=specification.price)
         storage_item.available = demand[operation]['available'](storage_item, specification.quantity)
         storage_item.save()
     contract.reserved = operation == 'apply'
