@@ -9,8 +9,8 @@ from django.urls import reverse
 
 class Product(models.Model):
 
-    fish = models.CharField(max_length=50, verbose_name='Название рыбы')
-    cutting = models.CharField(max_length=10, blank=True, verbose_name='Разделка')
+    fish = models.CharField(max_length=50, blank=False, null=False, verbose_name='Название рыбы')
+    cutting = models.CharField(max_length=15, blank=True, verbose_name='Разделка')
     size = models.CharField(max_length=15, blank=True, verbose_name='Размер')
     producer = models.CharField(max_length=50, blank=True, verbose_name='Производитель')
     package = models.CharField(max_length=15, blank=True, verbose_name='Упаковка')

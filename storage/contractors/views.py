@@ -17,7 +17,7 @@ class ContractorsList(LoginRequiredMixin, DataMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return Contractor.objects.all()
+        return Contractor.objects.all().order_by('-pk')
 
 
 class AddContractor(LoginRequiredMixin, DataMixin, CreateView):

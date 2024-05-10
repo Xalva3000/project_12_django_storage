@@ -31,14 +31,14 @@ class StorageItemsAvailableList(LoginRequiredMixin, DataMixin, ListView):
                                              weight_stored=Sum(F('weight') * F('stored'))).order_by('product__fish', 'price')
 
 
-class StorageItemsGroupList(LoginRequiredMixin, DataMixin, ListView):
-    template_name = 'storage_items/storage_items.html'
-    context_object_name = 'storage_items'
-    allow_empty = False
-    title_page = 'Склад'
-    category_page = 'storage'
-    paginate_by = 100
-
-    def get_queryset(self):
-        return StorageItem.objects.values('product').annotate(
-            available=Sum('available'), stored=Sum('stored'))
+# class StorageItemsGroupList(LoginRequiredMixin, DataMixin, ListView):
+#     template_name = 'storage_items/storage_items.html'
+#     context_object_name = 'storage_items'
+#     allow_empty = False
+#     title_page = 'Склад'
+#     category_page = 'storage'
+#     paginate_by = 100
+#
+#     def get_queryset(self):
+#         return StorageItem.objects.values('product').annotate(
+#             available=Sum('available'), stored=Sum('stored'))
