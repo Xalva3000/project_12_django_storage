@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from decimal import Decimal
 
+from django.urls import reverse
+
 
 def decimal_validator(value):
     if not isinstance(value, Decimal):
@@ -27,7 +29,7 @@ class Contract(models.Model):
     reserved = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
     executed = models.BooleanField(default=False)
-    note = models.TextField(blank=True, verbose_name='Заметки')
+    note = models.TextField(blank=True, null=True, verbose_name='Заметки')
     date_create = models.DateField(auto_now_add=True)
     date_execution = models.DateField(blank=True, null=True)
     date_delete = models.DateField(blank=True, null=True)
@@ -36,7 +38,10 @@ class Contract(models.Model):
     contractor = models.ForeignKey('contractors.Contractor', on_delete=models.PROTECT,
                                    null=True, related_name='contracts', verbose_name='Контрагент')
     manager = models.ForeignKey(get_user_model(), on_delete=models.PROTECT,
-                                related_name='contracts', null=True, default=None)
+                                related_name='contracts', blank=True, null=True, default=None)
+
+    def get_absolute_url(self):
+        return reverse('contracts:contract', kwargs={'pk': self.pk})
 
     def __str__(self):
         russian_contract_type = 'Продажа' if self.contract_type == 'outcome' else 'Покупка'

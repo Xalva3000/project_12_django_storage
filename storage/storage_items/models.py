@@ -15,7 +15,9 @@ class AvailableManager(models.Manager):
 class StorageItem(models.Model):
     product = models.ForeignKey(
         'products.Product',
-        on_delete=models.PROTECT, null=True,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=False,
         related_name='storage_items',
         verbose_name='Продукт')
     weight = models.DecimalField(default=1, null=False, max_digits=7, decimal_places=2)
