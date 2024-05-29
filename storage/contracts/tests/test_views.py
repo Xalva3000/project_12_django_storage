@@ -12,12 +12,11 @@ from django.urls import reverse
 from faker import Faker
 
 from products.models import Product
+from products.utils import tools, menu
 from contractors.models import Contractor
 from contracts.models import Contract, Specification
-
-from products.utils import tools, menu
-
 from contracts.filters import ContractFilter
+from storage_items.models import StorageItem
 
 
 #
@@ -713,24 +712,7 @@ class TestAddSpecificationsView(TestCase):
             'specifications-0-contract': ['1'],
             'specifications-0-id': ['']}
 
-        self.formset_data = {
-            # 'csrfmiddlewaretoken': ['U2dnGRfMy4NCuw9uRPYeJ3YrJE3TvD7VfwrtX8mDgG3ZB0yW4Uzh3J9mit78BUMv'],
-            'specifications-TOTAL_FORMS': ['2'],
-            'specifications-INITIAL_FORMS': ['2'],
-            'specifications-MIN_NUM_FORMS': ['0'],
-            'specifications-MAX_NUM_FORMS': ['1000'],
-            'specifications-0-storage_item': ['20'],
-            'specifications-0-variable_weight': ['1.00'],
-            'specifications-0-quantity': ['2400.00'],
-            'specifications-0-price': ['950.00'],
-            'specifications-0-contract': ['36'],
-            'specifications-0-id': ['53'],
-            'specifications-1-storage_item': ['19'],
-            'specifications-1-variable_weight': ['1.00'],
-            'specifications-1-quantity': ['2400.00'],
-            'specifications-1-price': ['1050.00'],
-            'specifications-1-contract': ['36'],
-            'specifications-1-id': ['54']}
+
 
     # @login_required
     # def add_specifications(request, pk):
@@ -778,7 +760,7 @@ class TestAddSpecificationsView(TestCase):
         self.assertEqual(len(response.context['formset']), 3)
         self.assertEqual(response.context['formset'].instance, c1)
 
-    def test_view_parameters_post_two_new_specs(self):
+    def test_view_parameters_get_two_new_specification_forms(self):
         c1 = Contract.objects.get(pk=self.existing_pk)
         path = reverse('contracts:add_specifications', args=[self.existing_pk])
 
@@ -796,7 +778,7 @@ class TestAddSpecificationsView(TestCase):
         self.assertEqual(len(response.context['formset']), 2)
         self.assertEqual(response.context['formset'].instance, c1)
 
-    def test_view_parameters_post_new_spec_data(self):
+    def test_view_parameters_post_data_for_new_income_specification(self):
         c1 = Contract.objects.get(pk=self.existing_pk)
         path = reverse('contracts:add_specifications', args=[self.existing_pk])
         redirect_uri = reverse('contracts:contract', args=[c1.pk])
@@ -810,6 +792,54 @@ class TestAddSpecificationsView(TestCase):
         self.assertTemplateNotUsed(response)
         self.assertIsNone(response.context)
         self.assertRedirects(response, redirect_uri)
+
+    def test_view_parameters_post_data_for_two_new_outcome_specifications(self):
+        c1 = Contract.objects.create(contract_type=Contract.ContractType.OUTCOME, contractor=self.contractors[0])
+        storage_item1 = StorageItem.objects.create(product=self.products[0], weight=18, price=900, available=1000, stored=1000)
+        storage_item2 = StorageItem.objects.create(product=self.products[1], weight=20, price=800, available=1000, stored=1000)
+        specification1 = Specification.objects.create(contract=c1, storage_item=storage_item1, variable_weight=18, price=1000, quantity=1000)
+        specification2 = Specification.objects.create(contract=c1, storage_item=storage_item2, variable_weight=20, price=900,
+                                                      quantity=1000)
+        formset_data = {
+            # 'csrfmiddlewaretoken': ['U2dnGRfMy4NCuw9uRPYeJ3YrJE3TvD7VfwrtX8mDgG3ZB0yW4Uzh3J9mit78BUMv'],
+            'specifications-TOTAL_FORMS': ['2'],
+            'specifications-INITIAL_FORMS': ['2'],
+            'specifications-MIN_NUM_FORMS': ['0'],
+            'specifications-MAX_NUM_FORMS': ['1000'],
+
+            'specifications-0-contract': ['11'],
+            'specifications-0-id': ['2'],
+            'specifications-0-storage_item': ['1'],
+            'specifications-0-variable_weight': ['1.00'],
+            'specifications-0-quantity': ['2200.00'],
+            'specifications-0-price': ['950.00'],
+
+            'specifications-1-contract': ['11'],
+            'specifications-1-id': ['3'],
+            'specifications-1-storage_item': ['2'],
+            'specifications-1-variable_weight': ['1.00'],
+            'specifications-1-quantity': ['2400.00'],
+            'specifications-1-price': ['1050.00'],}
+
+        path = reverse('contracts:add_specifications', args=[c1.pk])
+        redirect_uri = reverse('contracts:contract', args=[c1.pk])
+        response = self.client.post(path, data=formset_data)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertRedirects(response, redirect_uri)
+
+        s1 = Specification.objects.get(pk=2)
+        self.assertEqual(s1.variable_weight, 1)
+        self.assertEqual(s1.price, 950)
+        self.assertEqual(s1.quantity, 2200)
+
+        s2 = Specification.objects.get(pk=3)
+        self.assertEqual(s2.variable_weight, 1)
+        self.assertEqual(s2.price, 1050)
+        self.assertEqual(s2.quantity, 2400)
 
 
     def test_no_login_redirection(self):
@@ -825,11 +855,23 @@ class TestAddSpecificationsView(TestCase):
         self.assertFalse(response.templates)
         self.assertRedirects(response, redirect_uri)
 
-# <QueryDict: {'csrfmiddlewaretoken': ['At7jk3cCiPddRGj5sItZ4NQsAKu9piqFVXlpBkjt0rtAYaIxFN42ot1n9zyovz5f'], 'specifications-TOTAL_FORMS': ['2'], 'specifications-INITIAL_FO
-# RMS': ['2'], 'specifications-MIN_NUM_FORMS': ['0'], 'specifications-MAX_NUM_FORMS': ['1000'], 'specifications-0-product': ['17'], 'specifications-0-variable_weight': ['1
-# .00'], 'specifications-0-quantity': ['7000.00'], 'specifications-0-price': ['800.00'], 'specifications-0-contract': ['33'], 'specifications-0-id': ['45'], 'specification
-# s-1-product': ['18'], 'specifications-1-variable_weight': ['1.00'], 'specifications-1-quantity': ['7000.00'], 'specifications-1-price': ['700.00'], 'specifications-1-con
-# tract': ['33'], 'specifications-1-id': ['46']}>
+# {'csrfmiddlewaretoken': ['At7jk3cCiPddRGj5sItZ4NQsAKu9piqFVXlpBkjt0rtAYaIxFN42ot1n9zyovz5f'],
+# 'specifications-TOTAL_FORMS': ['2'],
+# 'specifications-INITIAL_FORMS': ['2'],
+# 'specifications-MIN_NUM_FORMS': ['0'],
+# 'specifications-MAX_NUM_FORMS': ['1000'],
+# 'specifications-0-product': ['17'],
+# 'specifications-0-variable_weight': ['1.00'],
+# 'specifications-0-quantity': ['7000.00'],
+# 'specifications-0-price': ['800.00'],
+# 'specifications-0-contract': ['33'],
+# 'specifications-0-id': ['45'],
+# 'specifications-1-product': ['18'],
+# 'specifications-1-variable_weight': ['1.00'],
+# 'specifications-1-quantity': ['7000.00'],
+# 'specifications-1-price': ['700.00'],
+# 'specifications-1-contract': ['33'],
+# 'specifications-1-id': ['46']}>
 
 
 # Обработка POST-запросов: Удостовериться, что view корректно обрабатывает POST-запросы,
