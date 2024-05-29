@@ -74,6 +74,12 @@ class Specification(models.Model):
     date_create = models.DateField(auto_now_add=True)
     date_update = models.DateField(auto_now=True)
 
+    def clean(self):
+        if not self.product and not self.storage_item:
+            raise ValidationError("Невозможно создание спецификации без указания продукта или скалдского обекта.")
+        # if not self.contract:
+        #     raise ValidationError("")
+
     def __str__(self):
         weight = ''.join(['(', str(self.variable_weight), 'кг)'])
         if self.product:

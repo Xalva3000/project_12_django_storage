@@ -144,5 +144,3 @@ class TestStorageItemsAvailableView(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertRedirects(response, redirect_uri)
 
-    def test_aqb(self):
-        pprint(StorageItem.objects.all())

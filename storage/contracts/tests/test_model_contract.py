@@ -10,38 +10,8 @@ from django.urls import reverse
 
 from contractors.models import Contractor
 from products.models import Product
-from contracts.models import Contract, Specification, Payment
+from contracts.models import Contract, Specification, Payment, decimal_validator, positive_validator
 from storage_items.models import StorageItem
-
-
-#
-#
-# class Payment(models.Model):
-#     contract = models.ForeignKey(
-#         'contracts.Contract',
-#         on_delete=models.PROTECT, null=True,
-#         related_name='payments',
-#         verbose_name='Платежи')
-#     date_payment = models.DateField(auto_now_add=True, null=False)
-#     amount = models.DecimalField(decimal_places=2, max_digits=10, blank=False, null=False, default=0)
-#
-#     def __str__(self):
-#         return f"{self.contract.pk} {self.date_payment} {self.amount}руб."
-#
-#
-# class Action(models.Model):
-#     contract = models.ForeignKey(
-#         'contracts.Contract',
-#         on_delete=models.PROTECT, null=True,
-#         related_name='actions',
-#         verbose_name='Действия')
-#
-#     action = models.TextField(max_length=100)
-#     date_action = models.DateField(auto_now_add=True, null=False)
-#
-#     def __str__(self):
-#         return f"{self.date_action}--{self.action}"
-
 
 
 
@@ -132,7 +102,7 @@ class TestContractModel(TestCase):
         self.assertEqual(self.min_contract._meta.get_field('contract_type').max_length, 7)
         self.assertFalse(self.min_contract._meta.get_field('contract_type').blank)
         self.assertFalse(self.min_contract._meta.get_field('contract_type').null)
-        self.assertTrue(self.min_contract._meta.get_field('date_plan').editable)
+        self.assertTrue(self.min_contract._meta.get_field('contract_type').editable)
         self.assertEqual(self.min_contract._meta.get_field('contract_type').default, Contract.ContractType.OUTCOME)
         self.assertEqual(self.min_contract._meta.get_field('contract_type').help_text, '')
 
@@ -568,56 +538,6 @@ class TestContractModel(TestCase):
 
 
 
-class TestSpecificationModel(TestCase):
-    pass
-
-# def decimal_validator(value):
-#     if not isinstance(value, Decimal):
-#         raise ValidationError("Variable must be Decimal")
-#
-#
-# def positive_validator(value):
-#     if value < 0:
-#         raise ValidationError("Variable must be positive")
-#
-#
-# class Specification(models.Model):
-#     product = models.ForeignKey(
-#         'products.Product',
-#         on_delete=models.PROTECT, null=True,
-#         related_name='specifications',
-#         verbose_name='Закупка')
-#     storage_item = models.ForeignKey(
-#         'storage_items.StorageItem',
-#         on_delete=models.PROTECT, null=True,
-#         related_name='specifications',
-#         verbose_name='Товар со клада')
-#     variable_weight = models.DecimalField(validators=[decimal_validator, positive_validator],
-#                                           decimal_places=2, max_digits=7, blank=False, null=False, default=1)
-#     quantity = models.DecimalField(validators=[decimal_validator, positive_validator],
-#                                    decimal_places=2, max_digits=10, blank=False, null=False, default=1)
-#     price = models.DecimalField(validators=[decimal_validator, positive_validator],
-#                                 decimal_places=2, max_digits=7, blank=False, null=False, default=0)
-#     contract = models.ForeignKey(
-#         'contracts.Contract',
-#         on_delete=models.PROTECT, null=True,
-#         related_name='specifications',
-#         verbose_name='Контракт')
-#     date_create = models.DateField(auto_now_add=True)
-#     date_update = models.DateField(auto_now=True)
-#
-#     def __str__(self):
-#         weight = ''.join(['(', str(self.variable_weight), 'кг)'])
-#         if self.product:
-#             look = f"{self.product.fish} {self.product.cutting} " \
-#                    f"{self.product.size} {self.product.producer}:: " \
-#                     f"{weight} x {self.quantity} = {self.variable_weight * self.quantity:,.2f}кг по {self.price}р"
-#         elif self.storage_item:
-#             look = f"{self.storage_item.product.fish} {self.storage_item.product.cutting} " \
-#                    f"{self.storage_item.product.size} {self.storage_item.product.producer}" \
-#                    f" (закуп:{self.storage_item.price})::{weight} X {self.quantity}=" \
-#                    f"{self.variable_weight*self.quantity:,.2f}кг по {self.price}р"
-#         return look
 
 
 # Корректность создания моделей: Убедиться, что модели создаются без ошибок и все поля определены правильно.
