@@ -76,9 +76,9 @@ class Specification(models.Model):
 
     def clean(self):
         if not self.product and not self.storage_item:
-            raise ValidationError("Невозможно создание спецификации без указания продукта или скалдского обекта.")
-        # if not self.contract:
-        #     raise ValidationError("")
+            raise ValidationError("Невозможно создание спецификации без указания продукта или складского объекта.")
+        if self.product and self.storage_item:
+            raise ValidationError("Невозможно создание спецификации с указанием продукта и складского объекта вместе.")
 
     def __str__(self):
         weight = ''.join(['(', str(self.variable_weight), 'кг)'])

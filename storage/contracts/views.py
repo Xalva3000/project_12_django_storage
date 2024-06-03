@@ -84,11 +84,11 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
         qs = queryset.filter(contract_type=contract_type)
         result = {}
         weight = qs.aggregate(w=Sum(F('total_weight')))
-        result['weight'] = weight['w']
+        result['weight'] = weight['w'] if weight['w'] else 0
         cost = qs.aggregate(s=Sum(F('total_sum')))
-        result['cost'] = cost['s']
+        result['cost'] = cost['s'] if cost['s'] else 0
         payments = qs.aggregate(p=Sum(F('total_payments')))
-        result['payments'] = payments['p']
+        result['payments'] = payments['p'] if payments['p'] else 0
 
         bonuses_qs = qs.values('id', 'manager__username', 'manager_share')
         lst = []
@@ -105,6 +105,8 @@ class ContractsMinimalList(LoginRequiredMixin, DataMixin, ListView):
             result['expenses'] = sum([dct['cost'] for dct in expenses])
             if result['expenses']:
                 result['expected'] = result['cost'] - result['expenses']
+            else:
+                result['expected'] = 0
         return result
 
 
@@ -168,6 +170,10 @@ class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
                 purchase = contract.specifications.aggregate(summa=Sum(F('quantity') * F('variable_weight') * F('storage_item__price')))
                 context['purchase'] = purchase['summa']
                 context['profit'] = total['summa'] - purchase['summa']
+        else:
+            context['tonnage'] = 0
+            context['total'] = 0
+            total = {'summa': 0}
 
         payments = contract.payments.all()
         if payments:
@@ -175,6 +181,7 @@ class ShowContract(LoginRequiredMixin, DataMixin, DetailView):
             payments_sum = contract.payments.aggregate(summa=Sum('amount'))
             context['payments_sum'] = payments_sum['summa']
             context['balance'] = total['summa'] - payments_sum['summa']
+        context['payments_count'] = contract.payments.all().count()
 
         return context
 
@@ -197,6 +204,7 @@ def add_specifications(request, pk):
 
     # сохранение данных группы форм
     if request.method == 'POST' and 'spec_amount' not in request.POST.keys():
+        print(request.POST)
         formset = SpecificationFormSet(request.POST, instance=contract)
         # print(request.POST)
         if formset.is_valid():

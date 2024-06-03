@@ -43,7 +43,20 @@ class UpdateContractForm(forms.ModelForm):
 class AddSpecificationForm(models.ModelForm):
     class Meta:
         model = Specification
-        fields = ['product', 'storage_item', 'quantity', 'price']
+        fields = ['product', 'storage_item', 'variable_weight', 'quantity', 'price', 'contract']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        product = cleaned_data.get('product')
+        storage_item = cleaned_data.get('storage_item')
+
+        if not product and not storage_item:
+            raise forms.ValidationError("Необходимо заполнить хотя бы одно из полей: product или storage_item")
+
+        if product and storage_item:
+            raise forms.ValidationError("Можно заполнить только одно из полей: product или storage_item")
+
+        return cleaned_data
 
 
 SpecificationFormSet = inlineformset_factory(

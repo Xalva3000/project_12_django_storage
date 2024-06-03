@@ -841,6 +841,60 @@ class TestAddSpecificationsView(TestCase):
         self.assertEqual(s2.price, 1050)
         self.assertEqual(s2.quantity, 2400)
 
+    def test_view_parameters_post_data_for_two_new_outcome_specifications_not_valid(self):
+        c1 = Contract.objects.create(contract_type=Contract.ContractType.OUTCOME, contractor=self.contractors[0])
+        storage_item1 = StorageItem.objects.create(product=self.products[0], weight=18, price=900, available=1000, stored=1000)
+        storage_item2 = StorageItem.objects.create(product=self.products[1], weight=20, price=800, available=1000, stored=1000)
+        specification1 = Specification.objects.create(contract=c1, storage_item=storage_item1, variable_weight=18, price=1000, quantity=1000)
+        specification2 = Specification.objects.create(contract=c1, storage_item=storage_item2, variable_weight=20, price=900,
+                                                      quantity=1000)
+        formset_data = {
+            # 'csrfmiddlewaretoken': ['U2dnGRfMy4NCuw9uRPYeJ3YrJE3TvD7VfwrtX8mDgG3ZB0yW4Uzh3J9mit78BUMv'],
+            'specifications-TOTAL_FORMS': ['2'],
+            'specifications-INITIAL_FORMS': ['2'],
+            'specifications-MIN_NUM_FORMS': ['0'],
+            'specifications-MAX_NUM_FORMS': ['1000'],
+
+            'specifications-0-contract': ['11'],
+            'specifications-0-id': ['2'],
+            'specifications-0-storage_item': ['1'],
+            'specifications-0-variable_weight': ['1.00'],
+            'specifications-0-quantity': ['2200.00'],
+            'specifications-0-price': ['950.00'],
+
+            'specifications-1-contract': ['11'],
+            'specifications-1-id': ['3'],
+            'specifications-1-storage_item': ['2'],
+            'specifications-1-variable_weight': ['-1'],
+            'specifications-1-quantity': ['2400.00'],
+            'specifications-1-price': ['1050.00'],}
+
+        path = reverse('contracts:add_specifications', args=[c1.pk])
+        response = self.client.post(path, data=formset_data)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertIsNotNone(response.context)
+        self.assertTemplateUsed(response, "contracts/add_specifications.html")
+        self.assertEqual(response.context['menu'], menu)
+        self.assertEqual(c1.pk, response.context['contract'].id)
+        self.assertEqual(c1.contractor, response.context['contract'].contractor)
+        self.assertEqual(response.context["tools"], tools["contracts"])
+        self.assertIn('contract', response.context)
+        self.assertEquals(response.context['contract'], c1)
+        self.assertEqual(len(response.context['formset']), 2)
+        self.assertEqual(response.context['formset'].instance, c1)
+
+        s1 = Specification.objects.get(pk=2)
+        self.assertEqual(s1.variable_weight, 18)
+        self.assertEqual(s1.price, 1000)
+        self.assertEqual(s1.quantity, 1000)
+
+        s2 = Specification.objects.get(pk=3)
+        self.assertEqual(s2.variable_weight, 20)
+        self.assertEqual(s2.price, 900)
+        self.assertEqual(s2.quantity, 1000)
+
 
     def test_no_login_redirection(self):
         path = reverse('contracts:add_specifications', args=[self.existing_pk])
