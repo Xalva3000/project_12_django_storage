@@ -15,7 +15,7 @@ app.autodiscover_tasks()
 @app.task
 def ceo_notification(data, email=EMAIL_HOST_USER):
     if 'pk' in data:
-        print('sending email')
+        # print('sending email')
         send_mail(f"Switched reserve status of contract {data['pk']}",
                   '',
                   'storage-site@yandex.ru',
@@ -27,7 +27,7 @@ def notify_tasker(data, /, *, email=EMAIL_HOST_USER, fail_silently=True):
     if fail_silently:
         try:
             if USE_CELERY:
-                print('using_celery')
+                # print('using_celery')
                 ceo_notification.delay(data, email)
             else:
                 ceo_notification(data, 'maasania@gmail.com')
@@ -41,7 +41,7 @@ def notify_tasker(data, /, *, email=EMAIL_HOST_USER, fail_silently=True):
 
 @app.task
 def send_db_file():
-    print('db_send')
+    # print('db_send')
     email = EmailMessage(
         'Database Backup',
         '',
