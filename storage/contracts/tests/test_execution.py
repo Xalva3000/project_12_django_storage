@@ -434,26 +434,168 @@ class TestExecutionSwitch(TestCase):
 
 
 
+class TestSwitchPayment(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        User.objects.create_user('homer', 'homer@simpson.net', 'simpson')
+        self.client.login(username='homer', password='simpson')
+
+        self.products = [Product.objects.create(fish=num) for num in range(1,3)]
+        self.contractor_income = Contractor.objects.create(name='ООО Алаид')
+        self.contractor_outcome = Contractor.objects.create(name='ИП Бородин')
+        self.contract_income = Contract.objects.create(
+            contractor=self.contractor_income,
+            contract_type=Contract.ContractType.INCOME)
+        self.contract_outcome = Contract.objects.create(contractor=self.contractor_outcome)
+        self.specifications_income = [Specification.objects.create(
+            contract=self.contract_income,
+            product=product,
+            variable_weight=18,
+            price=100,
+            quantity=1000) for product in self.products]
+        self.storage_items = [StorageItem.objects.create(
+            product=spec.product,
+            weight=spec.variable_weight,
+            price=spec.price,
+            available=spec.quantity,
+            stored=spec.quantity
+            ) for spec in self.specifications_income]
+        self.specifications_outcome = [Specification.objects.create(
+            contract=self.contract_outcome,
+            storage_item=si,
+            variable_weight=si.weight,
+            price=150,
+            quantity=int(si.available/2)) for si in self.storage_items]
+
+        self.existing_pk = 1
+        self.not_existing_pk = 100
+
+        # @login_required
+        # def switch_payment_by_contract_id(request, pk):
+        #     contract = get_object_or_404(Contract, pk=pk)
+        #     if contract.date_delete:
+        #         uri = reverse('contracts:contracts_deleted')
+        #         return redirect(uri)
+        #     if contract.specifications.all():
+        #         action = 'unpaid' if contract.paid else 'paid'
+        #         contract.paid = not contract.paid
+        #         contract.save()
+        #         insert_action_notification(contract=contract, action=action)
+        #     uri = reverse('contracts:contract', kwargs={'pk': pk})
+        #     return redirect(uri)
+
+    def test_not_executed_outcome_contract_getting_paid_status(self):
+        pk = 2
+        contract = Contract.objects.get(pk=pk)
+        contract.reserved = True
+        contract.save()
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+        path = reverse('contracts:contract_payment', args=[pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertTrue(Contract.objects.get(pk=pk).reserved)
+        self.assertFalse(Contract.objects.get(pk=pk).executed)
+        self.assertTrue(Contract.objects.get(pk=pk).paid)
+
+    def test_not_reserved_outcome_contract_getting_paid_status(self):
+        pk = 2
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+        path = reverse('contracts:contract_payment', args=[pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertFalse(Contract.objects.get(pk=pk).reserved)
+        self.assertFalse(Contract.objects.get(pk=pk).executed)
+        self.assertTrue(Contract.objects.get(pk=pk).paid)
+
+    def test_executed_income_contract_getting_paid_status(self):
+        contract = Contract.objects.get(pk=self.existing_pk)
+        contract.reserved = True
+        contract.executed = True
+        contract.save()
+        self.assertFalse(Contract.objects.get(pk=self.existing_pk).paid)
+        path = reverse('contracts:contract_payment', args=[self.existing_pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertTrue(Contract.objects.get(pk=self.existing_pk).paid)
+
+    def test_executed_outcome_contract_getting_paid_status(self):
+        pk = 2
+        contract = Contract.objects.get(pk=pk)
+        contract.reserved = True
+        contract.executed = True
+        contract.save()
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+        path = reverse('contracts:contract_payment', args=[pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertTrue(Contract.objects.get(pk=pk).paid)
+
+    def test_deleted_contract_cant_be_paid(self):
+        pk = 2
+        contract = Contract.objects.get(pk=pk)
+        contract.date_delete = date.today()
+        contract.save()
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+        path = reverse('contracts:contract_payment', args=[pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+
+    def test_contract_with_no_specifications_cant_be_paid(self):
+        Contract.objects.create(contractor=self.contractor_income)
+        pk = 3
+        contract = Contract.objects.get(pk=pk)
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+        path = reverse('contracts:contract_payment', args=[pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+        self.assertFalse(Contract.objects.get(pk=pk).paid)
+
+    def test_switch_login_not_existing_pk(self):
+        path = reverse('contracts:contract_payment', args=[self.not_existing_pk])
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_no_login_redirect(self):
+        path = reverse('contracts:contract_payment', args=[self.existing_pk])
+        self.client.logout()
+        redirect_uri = reverse('users:login') + '?next=' + path
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertIsNone(response.context)
+        self.assertFalse(response.templates)
+        self.assertRedirects(response, redirect_uri)
 
 
-#
-# @login_required
-# def switch_payment_by_contract_id(request, pk):
-#     contract = get_object_or_404(Contract, pk=pk)
-#     if contract.date_delete:
-#         uri = reverse('contracts:contracts_deleted')
-#         return redirect(uri)
-#     if contract.specifications.all():
-#         action = 'unpaid' if contract.paid else 'paid'
-#         contract.paid = not contract.paid
-#         contract.save()
-#         insert_action_notification(contract=contract, action=action)
-#     uri = reverse('contracts:contract', kwargs={'pk': pk})
-#     return redirect(uri)
-#
-#
 
-#
+
 #
 # @login_required
 # def delete_contract(request, pk):

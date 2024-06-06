@@ -97,6 +97,8 @@
         text-secondary
         {% endif %}">
         <h5 class="card-title">
+            <p>Контрагент: <a href="{% url 'contractors:contractor' contract.contractor.pk %}" 
+                class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">{{ contract.contractor }}</a></p>
           <p>Планируемая дата исполнения: {{ contract.date_plan }}</p>
           <p>Дата исполнения: {{ contract.date_execution|default:"Не исполнен" }}</p>
           {% if contract.date_delete %}

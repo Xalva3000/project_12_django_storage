@@ -204,9 +204,7 @@ def add_specifications(request, pk):
 
     # сохранение данных группы форм
     if request.method == 'POST' and 'spec_amount' not in request.POST.keys():
-        print(request.POST)
         formset = SpecificationFormSet(request.POST, instance=contract)
-        # print(request.POST)
         if formset.is_valid():
             formset.save()
             insert_action_notification(contract=contract, action='new_change')  # сообщение об изменении

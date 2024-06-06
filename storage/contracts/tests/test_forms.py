@@ -517,9 +517,9 @@ class TestSpecificationFormSet(TestCase):
         self.assertEqual(form_set.instance, self.contract_income)
         self.assertEqual(len(form_set.forms), 1)
         self.assertTrue(form_set.is_valid())
-
-        print(form_set)
-
         form_set.save()
 
-        # self.assertEqual(Specification.objects.all().count(), 1)
+        self.assertEqual(Specification.objects.all().count(), 1)
+        spec1 = Specification.objects.all()[0]
+        self.assertEqual(spec1.quantity, 2200)
+        self.assertEqual(spec1.price, 950)

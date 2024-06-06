@@ -412,7 +412,7 @@ class TestSpecificationModel(TestCase):
 
         with self.assertRaises(ValidationError) as e1:
             spec.clean()
-        self.assertEqual(e1.exception.messages, ['Невозможно создание спецификации без указания продукта или скалдского обекта.'])
+        self.assertEqual(e1.exception.messages, ['Невозможно создание спецификации без указания продукта или складского объекта.'])
         with self.assertRaises(ValidationError) as e2:
             spec.full_clean()
         self.assertEqual(len(e2.exception.messages), 4)
