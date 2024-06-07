@@ -169,7 +169,7 @@ def switch_execution_by_contract_id(request, pk):
 
 @login_required
 def delete_contract(request, pk):
-    contract = Contract.objects.get(pk=pk)
+    contract = get_object_or_404(Contract, pk=pk)
     re = contract_re_map(contract)
     action = False
     if re == '00' and not contract.date_delete:
@@ -186,11 +186,11 @@ def delete_contract(request, pk):
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
-
+@login_required
 def change_manager_share(request, pk):
     try:
         new_share = abs(int(request.POST.get('new_share', 0)))
-        contract = Contract.objects.get(pk=pk)
+        contract = get_object_or_404(Contract, pk=pk)
         contract.manager_share = new_share
         contract.save()
         logger.info(f"Manager share of Contract {pk} changed.")
@@ -199,24 +199,25 @@ def change_manager_share(request, pk):
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
-
+@login_required
 def change_note(request, pk):
     new_note = request.POST.get('new_note', '')
-    contract = Contract.objects.get(pk=pk)
+    contract = get_object_or_404(Contract, pk=pk)
     contract.note = new_note
     contract.save()
     logger.info(f"Note of Contract {pk} changed.")
     uri = reverse('contracts:contract', kwargs={'pk': pk})
     return redirect(uri)
 
-
+@login_required
 def add_payment(request, pk):
+    contract = get_object_or_404(Contract, pk=pk)
     try:
         action = 'new_payment'
         amount = int(request.POST.get(action, 0))
         if amount == 0:
             raise ValueError
-        payment = Payment.objects.create(contract_id=pk, amount=amount)
+        payment = Payment.objects.create(contract_id=contract.pk, amount=amount)
         payment.save()
         insert_action_notification(contract=pk, action=action, extra_info=amount)
         logger.info(f"Payment has been accepted for contract {pk}.")

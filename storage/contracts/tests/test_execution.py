@@ -2,10 +2,11 @@ from datetime import date
 from http import HTTPStatus
 from pprint import pprint
 from random import seed, choice
+from string import ascii_letters
 from time import sleep
 
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.test import TestCase, Client
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
@@ -596,10 +597,26 @@ class TestSwitchPayment(TestCase):
 
 
 
-#
+class TestDeleteContract(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        User.objects.create_user('homer', 'homer@simpson.net', 'simpson')
+        self.client.login(username='homer', password='simpson')
+
+        self.product = Product.objects.create(fish='Salmon')
+        self.contractor = Contractor.objects.create(name='ООО Алаид')
+
+        self.contract = Contract.objects.create(contractor=self.contractor, contract_type=Contract.ContractType.INCOME)
+        self.specification = Specification.objects.create(
+            contract=self.contract,
+            product=self.product,
+        )
+        self.existing_pk = 1
+        self.not_existing_pk = 100
+
 # @login_required
 # def delete_contract(request, pk):
-#     contract = Contract.objects.get(pk=pk)
+#     contract = get_object_or_404(Contract, pk=pk)
 #     re = contract_re_map(contract)
 #     action = False
 #     if re == '00' and not contract.date_delete:
@@ -614,8 +631,107 @@ class TestSwitchPayment(TestCase):
 #         contract.save()
 #     uri = reverse('contracts:contract', kwargs={'pk': pk})
 #     return redirect(uri)
-#
-#
+
+    def test_not_reserved_contract_deletion(self):
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+        path = reverse('contracts:contract_delete', args=[self.existing_pk])
+        response = self.client.get(path)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Contract.objects.get(pk=1).date_delete, date.today())
+
+    def test_reserved_contract_deletion(self):
+        self.contract.reserved = True
+        self.contract.save()
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+        path = reverse('contracts:contract_delete', args=[self.existing_pk])
+        response = self.client.get(path)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+
+    def test_executed_contract_deletion(self):
+        self.contract.reserved = True
+        self.contract.executed = True
+        self.contract.save()
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+        path = reverse('contracts:contract_delete', args=[self.existing_pk])
+        response = self.client.get(path)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+
+    def test_deleted_contract_recovery(self):
+        self.contract.date_delete = date.today()
+        self.contract.save()
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertEqual(Contract.objects.get(pk=1).date_delete, date.today())
+        path = reverse('contracts:contract_delete', args=[self.existing_pk])
+        response = self.client.get(path)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+
+    def test_login_not_existing_pk(self):
+        path = reverse('contracts:contract_delete', args=[self.not_existing_pk])
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+    def test_no_login_redirect(self):
+        path = reverse('contracts:contract_delete', args=[self.existing_pk])
+        self.client.logout()
+        redirect_uri = reverse('users:login') + '?next=' + path
+
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'GET')
+        self.assertIsNone(response.context)
+        self.assertFalse(response.templates)
+        self.assertRedirects(response, redirect_uri)
+
+
+class TestChangeManagerShare(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        User.objects.create_user('homer', 'homer@simpson.net', 'simpson')
+        self.client.login(username='homer', password='simpson')
+
+        self.product = Product.objects.create(fish='Salmon')
+        self.contractor = Contractor.objects.create(name='ООО Алаид')
+
+        self.contract = Contract.objects.create(contractor=self.contractor, contract_type=Contract.ContractType.INCOME)
+        self.specification = Specification.objects.create(
+            contract=self.contract,
+            product=self.product,
+        )
+        self.existing_pk = 1
+        self.not_existing_pk = 100
+
 # def change_manager_share(request, pk):
 #     try:
 #         new_share = abs(int(request.POST.get('new_share', 0)))
@@ -626,17 +742,157 @@ class TestSwitchPayment(TestCase):
 #         pass
 #     uri = reverse('contracts:contract', kwargs={'pk': pk})
 #     return redirect(uri)
-#
-#
-# def change_note(request, pk):
-#     new_note = request.POST.get('new_note', '')
-#     contract = Contract.objects.get(pk=pk)
-#     contract.note = new_note
-#     contract.save()
-#     uri = reverse('contracts:contract', kwargs={'pk': pk})
-#     return redirect(uri)
-#
-#
+
+    def test_post_new_share(self):
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+        path = reverse('contracts:change_manager_share', args=[self.existing_pk])
+        response = self.client.post(path, data={'new_share': 100_000})
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Contract.objects.get(pk=1).manager_share, 100_000)
+
+    def test_post_negative_new_share(self):
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+        path = reverse('contracts:change_manager_share', args=[self.existing_pk])
+        response = self.client.post(path, data={'new_share': -100_000})
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Contract.objects.get(pk=1).manager_share, 100_000)
+
+    def test_change_share(self):
+        self.contract.manager_share = 50_000
+        self.contract.save()
+        self.assertEqual(Contract.objects.get(pk=1).manager_share, 50_000)
+        self.assertTrue(Contract.objects.filter(pk=1).exists())
+        self.assertIsNone(Contract.objects.get(pk=1).date_delete)
+        path = reverse('contracts:change_manager_share', args=[self.existing_pk])
+        response = self.client.post(path, data={'new_share': 0})
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Contract.objects.get(pk=1).manager_share, 0)
+
+    def test_login_not_existing_pk(self):
+        path = reverse('contracts:change_manager_share', args=[self.not_existing_pk])
+        response = self.client.post(path, data={'new_share': 0})
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+    def test_no_login_redirect(self):
+        path = reverse('contracts:change_manager_share', args=[self.existing_pk])
+        self.client.logout()
+        redirect_uri = reverse('users:login') + '?next=' + path
+
+        response = self.client.post(path, data={'new_share': 0})
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertIsNone(response.context)
+        self.assertFalse(response.templates)
+        self.assertRedirects(response, redirect_uri)
+
+
+class TestChangeNote(TestCase):
+    def setUp(self) -> None:
+        self.contractor = Contractor.objects.create(name="ООО Алаид")
+        self.contract = Contract.objects.create(contractor=self.contractor, contract_type=Contract.ContractType.INCOME)
+
+        self.client = Client()
+        User.objects.create_user('homer', 'homer@simpson.net', 'simpson')
+        self.client.login(username='homer', password='simpson')
+
+        self.existing_pk = 1
+        self.not_existing_pk = 100
+
+    # def change_note(request, pk):
+    #     new_note = request.POST.get('new_note', '')
+    #     contract = get_object_or_404(Contract, pk=pk)
+    #     contract.note = new_note
+    #     contract.save()
+    #     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    #     return redirect(uri)
+
+    def test_existing_contract_change_note(self):
+        self.assertIsNone(Contract.objects.get(pk=1).note)
+        path = reverse('contracts:change_note', args=[1])
+        response = self.client.post(path, data={'new_note': 'отгрузка завтра'})
+        self.assertEqual(Contract.objects.get(pk=1).note, 'отгрузка завтра')
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+    def test_existing_contract_add_long_note(self):
+        note = ''.join([choice(ascii_letters) for _ in range(10_000)])
+
+        self.assertIsNone(Contract.objects.get(pk=1).note)
+        path = reverse('contracts:change_note', args=[1])
+        response = self.client.post(path, data={'new_note': note})
+        self.assertEqual(len(Contract.objects.get(pk=1).note), 10_000)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+    def test_login_not_existing_pk(self):
+        path = reverse('contracts:change_note', args=[self.not_existing_pk])
+        response = self.client.post(path, data={'new_note': 'отгрузка завтра'})
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+    def test_no_login_redirect(self):
+        self.assertIsNone(Contract.objects.get(pk=1).note)
+        path = reverse('contracts:change_note', args=[self.existing_pk])
+        self.client.logout()
+        redirect_uri = reverse('users:login') + '?next=' + path
+
+        response = self.client.post(path, data={'new_note': 'отгрузка завтра'})
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertIsNone(response.context)
+        self.assertFalse(response.templates)
+        self.assertRedirects(response, redirect_uri)
+        self.assertIsNone(Contract.objects.get(pk=1).note)
+
+
+class TestAddPayment(TestCase):
+    def setUp(self) -> None:
+        self.contractor = Contractor.objects.create(name="ООО Алаид")
+        self.contract = Contract.objects.create(contractor=self.contractor, contract_type=Contract.ContractType.INCOME)
+
+        self.client = Client()
+        User.objects.create_user('homer', 'homer@simpson.net', 'simpson')
+        self.client.login(username='homer', password='simpson')
+
+        self.existing_pk = 1
+        self.not_existing_pk = 100
+
 # def add_payment(request, pk):
 #     try:
 #         action = 'new_payment'
@@ -651,3 +907,62 @@ class TestSwitchPayment(TestCase):
 #     uri = reverse('contracts:contract', kwargs={'pk': pk})
 #     return redirect(uri)
 
+    def test_new_payments_for_contract(self):
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        path = reverse('contracts:add_payment', args=[1])
+        [self.client.post(path, data={'new_payment': 10000}) for _ in range(5)]
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 5)
+        self.assertEqual(Contract.objects.get(pk=1).payments.aggregate(sum=Sum('amount'))['sum'], 50_000)
+
+    def test_zero_payment(self):
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        path = reverse('contracts:add_payment', args=[1])
+        self.client.post(path, data={'new_payment': 0})
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        self.assertIsNone(Contract.objects.get(pk=1).payments.aggregate(sum=Sum('amount'))['sum'])
+
+    def test_string_payment(self):
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        path = reverse('contracts:add_payment', args=[1])
+        self.client.post(path, data={'new_payment': 'dfbvfgb'})
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        self.assertIsNone(Contract.objects.get(pk=1).payments.aggregate(sum=Sum('amount'))['sum'])
+
+    def test_negative_payment(self):
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        path = reverse('contracts:add_payment', args=[1])
+        response = self.client.post(path, data={'new_payment': -10_000})
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 1)
+        self.assertEqual(Contract.objects.get(pk=1).payments.aggregate(sum=Sum('amount'))['sum'], -10_000)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+
+    def test_login_not_existing_pk(self):
+        path = reverse('contracts:add_payment', args=[self.not_existing_pk])
+        response = self.client.post(path, data={'new_payment': 10000})
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertTemplateNotUsed(response)
+        self.assertIsNone(response.context)
+
+    def test_no_login_redirect(self):
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
+        path = reverse('contracts:add_payment', args=[self.existing_pk])
+        self.client.logout()
+        redirect_uri = reverse('users:login') + '?next=' + path
+
+        response = self.client.post(path, data={'new_payment': 10000})
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.request['PATH_INFO'], path)
+        self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
+        self.assertIsNone(response.context)
+        self.assertFalse(response.templates)
+        self.assertRedirects(response, redirect_uri)
+        self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
