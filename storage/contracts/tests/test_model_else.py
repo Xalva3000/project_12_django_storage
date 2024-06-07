@@ -1,8 +1,10 @@
 from datetime import date
 from random import choice
 
+
 from _decimal import InvalidOperation
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.db.models import NOT_PROVIDED, ProtectedError, Sum
 from django.test import TestCase
 
@@ -132,6 +134,12 @@ class TestPaymentModel(TestCase):
 
         with self.assertRaises(InvalidOperation) as e2:
             Payment.objects.create(contract=self.contract, amount=100_000_000.12)
+
+    # def test_not_existing_contract(self):
+    #     with self.assertRaises(Exception) as e1:
+    #         payment = Payment.objects.create(contract_id=1000, amount=10_000)
+    #         payment.full_clean()
+    #     self.assertEqual(e1.exception.messages, ['Объект модели contract со значением поля id, равным 1000, не существует.'])
 
     def test_date_update(self):
         new_date = date(2020, 2, 2)

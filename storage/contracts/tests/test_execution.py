@@ -614,23 +614,23 @@ class TestDeleteContract(TestCase):
         self.existing_pk = 1
         self.not_existing_pk = 100
 
-# @login_required
-# def delete_contract(request, pk):
-#     contract = get_object_or_404(Contract, pk=pk)
-#     re = contract_re_map(contract)
-#     action = False
-#     if re == '00' and not contract.date_delete:
-#         action = 'deleted'
-#         contract.date_delete = datetime.date.today()
-#     elif re == '00' and contract.date_delete:
-#         action = 'undeleted'
-#         contract.date_delete = None
-#
-#     if action:
-#         insert_action_notification(contract=contract, action=action)
-#         contract.save()
-#     uri = reverse('contracts:contract', kwargs={'pk': pk})
-#     return redirect(uri)
+    # @login_required
+    # def delete_contract(request, pk):
+    #     contract = get_object_or_404(Contract, pk=pk)
+    #     re = contract_re_map(contract)
+    #     action = False
+    #     if re == '00' and not contract.date_delete:
+    #         action = 'deleted'
+    #         contract.date_delete = datetime.date.today()
+    #     elif re == '00' and contract.date_delete:
+    #         action = 'undeleted'
+    #         contract.date_delete = None
+    #
+    #     if action:
+    #         insert_action_notification(contract=contract, action=action)
+    #         contract.save()
+    #     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    #     return redirect(uri)
 
     def test_not_reserved_contract_deletion(self):
         self.assertTrue(Contract.objects.filter(pk=1).exists())
@@ -732,16 +732,16 @@ class TestChangeManagerShare(TestCase):
         self.existing_pk = 1
         self.not_existing_pk = 100
 
-# def change_manager_share(request, pk):
-#     try:
-#         new_share = abs(int(request.POST.get('new_share', 0)))
-#         contract = Contract.objects.get(pk=pk)
-#         contract.manager_share = new_share
-#         contract.save()
-#     except ValueError:
-#         pass
-#     uri = reverse('contracts:contract', kwargs={'pk': pk})
-#     return redirect(uri)
+    # def change_manager_share(request, pk):
+    #     try:
+    #         new_share = abs(int(request.POST.get('new_share', 0)))
+    #         contract = Contract.objects.get(pk=pk)
+    #         contract.manager_share = new_share
+    #         contract.save()
+    #     except ValueError:
+    #         pass
+    #     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    #     return redirect(uri)
 
     def test_post_new_share(self):
         self.assertTrue(Contract.objects.filter(pk=1).exists())
@@ -893,19 +893,19 @@ class TestAddPayment(TestCase):
         self.existing_pk = 1
         self.not_existing_pk = 100
 
-# def add_payment(request, pk):
-#     try:
-#         action = 'new_payment'
-#         amount = int(request.POST.get(action, 0))
-#         if amount == 0:
-#             raise ValueError
-#         payment = Payment.objects.create(contract_id=pk, amount=amount)
-#         payment.save()
-#         insert_action_notification(contract=pk, action=action, extra_info=amount)
-#     except ValueError:
-#         pass
-#     uri = reverse('contracts:contract', kwargs={'pk': pk})
-#     return redirect(uri)
+    # def add_payment(request, pk):
+    #     try:
+    #         action = 'new_payment'
+    #         amount = int(request.POST.get(action, 0))
+    #         if amount == 0:
+    #             raise ValueError
+    #         payment = Payment.objects.create(contract_id=pk, amount=amount)
+    #         payment.save()
+    #         insert_action_notification(contract=pk, action=action, extra_info=amount)
+    #     except ValueError:
+    #         pass
+    #     uri = reverse('contracts:contract', kwargs={'pk': pk})
+    #     return redirect(uri)
 
     def test_new_payments_for_contract(self):
         self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
@@ -941,7 +941,6 @@ class TestAddPayment(TestCase):
         self.assertTemplateNotUsed(response)
         self.assertIsNone(response.context)
 
-
     def test_login_not_existing_pk(self):
         path = reverse('contracts:add_payment', args=[self.not_existing_pk])
         response = self.client.post(path, data={'new_payment': 10000})
@@ -951,6 +950,7 @@ class TestAddPayment(TestCase):
         self.assertEqual(response.request['REQUEST_METHOD'], 'POST')
         self.assertTemplateNotUsed(response)
         self.assertIsNone(response.context)
+        self.assertEqual(Payment.objects.all().count(), 0)
 
     def test_no_login_redirect(self):
         self.assertEqual(Contract.objects.get(pk=1).payments.all().count(), 0)
