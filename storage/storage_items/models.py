@@ -29,8 +29,10 @@ class StorageItem(models.Model):
     not_zero = NotZeroManager()
     objects = models.Manager()
 
+
     class Meta:
         unique_together = [("product", "price", "weight")]
+        ordering = ['-available', '-stored', 'product__fish']
 
     def __str__(self):
         return f"{self.product} {self.weight}кг {self.price}руб: {self.available}/{self.stored}"
