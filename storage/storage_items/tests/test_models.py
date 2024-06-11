@@ -318,4 +318,3 @@ class TestStorageItemModel(TestCase):
         with self.assertRaises(ValidationError) as e1:
             si.full_clean()
         self.assertEqual(e1.exception.messages, ['Убедитесь, что вы ввели не более 2 цифр после запятой.'])
-

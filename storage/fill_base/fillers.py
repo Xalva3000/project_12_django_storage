@@ -60,56 +60,45 @@ contracts_outcome = [Contract.objects.create(
 
 specifications_outcome = [[Specification.objects.create(
     contract=choice(Contract.objects.filter(date_plan__gt=c.date_plan, contract_type=Contract.ContractType.OUTCOME)),
-    storage_item=StorageItem.objects.filter(product=spec.product,
+    storage_item=StorageItem.objects.get(product=spec.product,
                                             price=spec.price,
-                                            weight=spec.variable_weight)[0],
+                                            weight=spec.variable_weight),
     price=spec.price + choice([20,50,100]),
     quantity=choices(sorted(filter(lambda num: num <= spec.quantity, quantity_list))[-2::], [10, 90])[0]
 ) for spec in c.specifications.all()
     if StorageItem.objects.filter(product=spec.product, price=spec.price, weight=spec.variable_weight).exists()]
     for c in contracts_income]
 
-[switch_reserve(c.pk) for c in contracts_outcome]
-[switch_execution(c.pk) for c in contracts_outcome]
+specifications_outcome = [Specification.objects.create(
+    contract=choice(contracts_outcome),
+    storage_item=si,
+    variable_weight=si.weight,
+    price=si.price + 100,
+    quantity=si.available
+) for si in StorageItem.not_zero.all()]
+
+[c.date_delete=date.today() for c in contracts_outcome if not c.specifications.all().exists()]
+
+for c in contracts_outcome:
+    if not c.specifications.all().exists():
+        c.date_delete = date.today()
+
+
+[switch_reserve(c.pk) for c in contracts_outcome if c.date_delete is None]
+[switch_execution(c.pk) for c in Contract.objects.filter(date_delete=None, contract_type=Contract.ContractType.OUTCOME)]
 
 [Payment.objects.create(
     contract=c,
     amount=int(c.specifications.aggregate(sum=Sum(F('price') * F('variable_weight') * F('quantity')))['sum'])
 ) for c in contracts_income]
+
 [Payment.objects.create(
     contract=c,
     amount=int(c.specifications.aggregate(sum=Sum(F('price') * F('variable_weight') * F('quantity')))['sum'])
-) for c in Contract.objects.filter(contract_type=Contract.ContractType.OUTCOME) if c.specifications.all().exists()]
+) for c in Contract.objects.filter(date_delete=None, contract_type=Contract.ContractType.OUTCOME)]
 
 [switch_payment(c.pk) for c in Contract.objects.filter(contract_type=Contract.ContractType.OUTCOME) if c.executed]
 
-# [switch_execution(c.pk) for c in Contract.objects.filter(date_create=date.today())]
-# [Payment.objects.create(contract=c, amount=int(
-#     c.specifications.aggregate(sum=Sum(F('price') * F('variable_weight') * F('quantity')))['sum'])) for c in
-#  Contract.objects.filter(date_create=date.today())]
-# [switch_payment(c.pk) for c in Contract.objects.filter(date_create=date(2024,6,8)))]
-
-# contracts_outcome = [Contract.objects.create(contractor=choice(Contractor.objects.filter(pk__in=range(100,167))),
-#                                              contract_type=Contract.ContractType.OUTCOME,
-#                                              date_plan=c.date_plan + timedelta(days=choice(range(5)))) for c in
-#                      Contract.objects.filter(date_create=date(2024,6,8))]
-
-
-# from random import choices
-
-
-# specifications_outcome = [[Specification.objects.create(contract=c,
-#                                                        storage_item=StorageItem.objects.filter(product=spec.product,
-#                                                                                                price=spec.price,
-#                                                                                                weight=spec.variable_weight)[
-#                                                            0],
-#                                                        price=spec.price + choice([20,50,100]),
-#                                                        quantity=choice(list(filter(lambda num: num <= spec.quantity, quantity_list))[-2::])) for spec in c.specifications.all()]
-#                           for c in Contract.objects.filter(date_create=date(2024,6,8))]
-
-# [client.get(reverse('contracts:contract_reserve', args=[c.pk])) for c in contracts_outcome]
-# [client.get(reverse('contracts:contract_execution', args=[c.pk])) for c in contracts_outcome]
-# [switch_reserve(c.pk) for c in  Contract.objects.filter(Q(date_create=date(2024,6,8)) & Q(contract_type=Contract.ContractType.OUTCOME)))]
-
-
-
+for c in Contract.objects.filter(date_delete=None):
+    c.manager_share = c.specifications.aggregate(w=Sum(F('variable_weight') * F('quantity')))['w'] * 5
+    c.save()

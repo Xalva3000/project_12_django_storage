@@ -29,12 +29,12 @@ environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = False if env("DEBUG") == '0' else True
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 INTERNAL_IPS = ["127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(" ")
-SITE_URL = 'storage-monitor.ru'
+SITE_URL = env("SITE_URL")
 
 # Application definition
 INSTALLED_APPS = [
@@ -106,7 +106,7 @@ WSGI_APPLICATION = "storage.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / env('DB'),
         "ATOMIC_REQUESTS": True,
     }
 }

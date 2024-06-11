@@ -101,7 +101,7 @@ class Payment(models.Model):
         related_name='payments',
         verbose_name='Платежи')
     date_payment = models.DateField(auto_now_add=True, null=False)
-    amount = models.DecimalField(decimal_places=2, max_digits=10, blank=False, null=False, default=0)
+    amount = models.DecimalField(decimal_places=2, max_digits=12, blank=False, null=False, default=0)
 
     def __str__(self):
         return f"{self.contract.pk} {self.date_payment} {self.amount}руб."
