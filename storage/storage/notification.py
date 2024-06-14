@@ -4,7 +4,7 @@ from django.db import connection, transaction
 from django.core.mail import send_mail, EmailMessage
 from celery import Celery
 
-from storage.settings import EMAIL_HOST_USER, USE_CELERY, BASE_DIR, CEO_EMAIL, EMAIL_HOST, DB_FILE_NAME
+from storage.settings import EMAIL_HOST_USER, USE_CELERY, BASE_DIR, CEO_EMAIL, DB_FILE_NAME
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'storage.settings')
 # redis_path = "redis://127.0.0.1:6379" if os.name == 'nt' else "redis://redis:6379/0"
@@ -19,7 +19,7 @@ def ceo_notification(data, email=EMAIL_HOST_USER):
         # print('sending email')
         send_mail(f"Switched reserve status of contract {data['pk']}",
                   '',
-                  EMAIL_HOST,
+                  EMAIL_HOST_USER,
                   [email],
                   fail_silently=False)
 
@@ -46,8 +46,8 @@ def send_db_file():
     email = EmailMessage(
         'Database Backup',
         '',
-        EMAIL_HOST,
-        [CEO_EMAIL, EMAIL_HOST],
+        EMAIL_HOST_USER,
+        [CEO_EMAIL, EMAIL_HOST_USER],
     )
     email.attach_file(BASE_DIR / 'db.sqlite3')
     email.send()
