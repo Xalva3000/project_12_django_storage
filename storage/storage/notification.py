@@ -1,9 +1,10 @@
 import os
 
+from django.db import connection, transaction
 from django.core.mail import send_mail, EmailMessage
 from celery import Celery
 
-from storage.settings import EMAIL_HOST_USER, USE_CELERY, BASE_DIR
+from storage.settings import EMAIL_HOST_USER, USE_CELERY, BASE_DIR, CEO_EMAIL, EMAIL_HOST, DB_FILE_NAME
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'storage.settings')
 # redis_path = "redis://127.0.0.1:6379" if os.name == 'nt' else "redis://redis:6379/0"
@@ -18,7 +19,7 @@ def ceo_notification(data, email=EMAIL_HOST_USER):
         # print('sending email')
         send_mail(f"Switched reserve status of contract {data['pk']}",
                   '',
-                  'storage-site@yandex.ru',
+                  EMAIL_HOST,
                   [email],
                   fail_silently=False)
 
@@ -30,14 +31,14 @@ def notify_tasker(data, /, *, email=EMAIL_HOST_USER, fail_silently=True):
                 # print('using_celery')
                 ceo_notification.delay(data, email)
             else:
-                ceo_notification(data, 'maasania@gmail.com')
+                ceo_notification(data, CEO_EMAIL)
         except:
             pass
     else:
         if USE_CELERY:
             ceo_notification.delay(data, email)
         else:
-            ceo_notification(data, 'maasania@gmail.com')
+            ceo_notification(data, CEO_EMAIL)
 
 @app.task
 def send_db_file():
@@ -45,9 +46,14 @@ def send_db_file():
     email = EmailMessage(
         'Database Backup',
         '',
-        'storage-site@yandex.ru',
-        ['maasania@gmail.com', 'storage-site@yandex.ru'],
+        EMAIL_HOST,
+        [CEO_EMAIL, EMAIL_HOST],
     )
     email.attach_file(BASE_DIR / 'db.sqlite3')
     email.send()
 
+@app.task
+def vacuum_command_for_db_file():
+    cursor = connection.cursor()
+    cursor.execute('VACUUM')
+    transaction.commit()

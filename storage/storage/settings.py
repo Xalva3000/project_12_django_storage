@@ -103,10 +103,11 @@ WSGI_APPLICATION = "storage.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+DB_FILE_NAME = env('DB')
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / env('DB'),
+        "NAME": BASE_DIR / DB_FILE_NAME,
         "ATOMIC_REQUESTS": True,
     }
 }
@@ -174,6 +175,7 @@ EMAIL_BACKEND = "users.backends.email_backend.EmailBackend"
 EMAIL_USE_SSL = False
 EMAIL_USE_TLS = True
 EMAIL_HOST = env("EMAIL_HOST")
+CEO_EMAIL = env("CEO_EMAIL")
 EMAIL_PORT = env("EMAIL_PORT_SSL") if EMAIL_USE_SSL else env("EMAIL_PORT_TLS")
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
